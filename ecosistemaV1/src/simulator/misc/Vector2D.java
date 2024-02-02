@@ -111,6 +111,12 @@ public class Vector2D {
 		assert (y >= min && y <= max);
 		return new Vector2D(x, y);
 	}
+	
+	public static Double get_random_pos(double min, double max) {
+		double d = min + Utils._rand.nextDouble(max - min);
+		assert (d >= min && d <= max);
+		return d;
+	}
 
 	public JSONArray asJSONArray() {
 		JSONArray a = new JSONArray();
@@ -150,6 +156,20 @@ public class Vector2D {
 	// return a string representation of the vector
 	public String toString() {
 		return "[" + _x + "," + _y + "]";
+	}
+
+	public void fixPos() {
+		
+		while (_x >= width) _x = (_x - width);
+		while (_x < 0) _x = (_x + width);
+		while (_y >= height) _y = (_y - height);
+		while (_y < 0) _y = (_y + height);
+
+	}
+
+	public boolean isOutOfMap() {
+		
+		return 1 == 0;
 	}
 
 }

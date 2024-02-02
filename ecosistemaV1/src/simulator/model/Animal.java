@@ -8,25 +8,27 @@ import simulator.misc.Vector2D;
 public abstract class Animal implements Entity, AnimalInfo {
 
 	private final static double SPEED = 0.1;
-	private final static double ENERGY = 100;
+	private final static double ENERGY = 100.0;
 	private final static double BSPEED = 0.2;
 	private final static double BSIGHT = 0.2;
 	private final static double BPOS = 60.0;
+	private final static double SPEED_FORCE = 0.007;
+	private final static double BABY_CHANCE = 0.9;
 
-	private String _genetic_code;
-	private Diet _diet;
-	private State _state;
-	private Vector2D _pos;
-	private Vector2D _dest;
-	private double _energy;
-	private double _speed;
-	private double _age;
-	private double _desire;
-	private double _sight_range;
-	private Animal _mate_target;
-	private Animal _baby;
-	private AnimalMapView _region_mngr;
-	private SelectionStrategy _mate_strategy;
+	protected String _genetic_code;
+	protected Diet _diet;
+	protected State _state;
+	protected Vector2D _pos;
+	protected Vector2D _dest;
+	protected double _energy;
+	protected double _speed;
+	protected double _age;
+	protected double _desire;
+	protected double _sight_range;
+	protected Animal _mate_target;
+	protected Animal _baby;
+	protected AnimalMapView _region_mngr;
+	protected SelectionStrategy _mate_strategy;
 
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed,
 			SelectionStrategy mate_strategy, Vector2D pos) {
@@ -66,16 +68,23 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 		this._region_mngr = reg_mngr;
 		if (this._pos == null) {
-
+			this._pos = new Vector2D(Vector2D.get_random_pos(0, _region_mngr.get_width() - 1),
+					Vector2D.get_random_pos(0, _region_mngr.get_height() - 1));
 		} else
-			this._pos.ajustar();
+			this._pos.fixPos();
+		set_RandomDest();
+	}
 
+	protected void set_RandomDest() {
+		this._dest = new Vector2D(Vector2D.get_random_pos(0, _region_mngr.get_width() - 1),
+				Vector2D.get_random_pos(0, _region_mngr.get_height() - 1));
 	}
 
 	protected Animal deliver_baby() {
 
-		// TODO
+		Animal baby = this._baby;
 		this._baby = null;
+		return baby;
 	}
 
 	protected void move(double speed) {
@@ -83,12 +92,45 @@ public abstract class Animal implements Entity, AnimalInfo {
 		this._pos = this._pos.plus(this._dest.minus(this._pos).direction().scale(speed));
 	}
 
-	public JSONObject as_JSON(){
-	{
-	"pos": [28.90696391797469,22.009772194487613],
-	"gcode": "Sheep",
-	"diet": "HERBIVORE",
-	"state": "NORMAL";
+	public JSONObject as_JSON() {
+
+		JSONObject jo1 = new JSONObject();
+
+		jo1.put("pos:", this._pos.asJSONArray());
+		jo1.put("gcode", this._genetic_code);
+		jo1.put("diet", this._diet.toString());
+		jo1.put("state", this._state.toString());
+		return jo1;
 	}
+	
+	protected boolean isDead() {
+		
+		return _state.equals(State.DEAD);
+	}
+	
+	protected void setStateToNormal() {
+		
+		this._state = State.NORMAL;
+		this._mate_target = null;
+	}
+	
+	protected double velocity(double dt) {
+		
+		return this._speed*dt*Math.exp((this._energy-ENERGY)*SPEED_FORCE);
+	}
+
+	protected boolean isOutOfRange(Animal a) {
+		
+		return this._pos.distanceTo(a.get_position()) > this._sight_range;
+	}
+	
+	protected void resetDesire() {
+		
+		this._desire = 0.0;
+	}
+
+	protected boolean canHaveBaby() {
+		
+		return Utils.get_randomized_parameter(1,1) < BABY_CHANCE;
 	}
 }

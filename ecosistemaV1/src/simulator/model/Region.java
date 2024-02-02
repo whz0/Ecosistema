@@ -33,7 +33,7 @@ public class Region implements Entity, RegionInfo, FoodSupplier{
 	}
 	
 	final List<Animal> getAnimals(){
-		
+		//TODO
 	}
 	
 	public JSONObject as_JSON()
