@@ -9,11 +9,15 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 	private final static double SPEED = 0.1;
 	private final static double ENERGY = 100.0;
+	private final static double MIN_ENERGY = 0.0;
+	private final static double MAX_DESIRE = 100.0;
 	private final static double BSPEED = 0.2;
 	private final static double BSIGHT = 0.2;
 	private final static double BPOS = 60.0;
 	private final static double SPEED_FORCE = 0.007;
 	private final static double BABY_CHANCE = 0.9;
+	private final static double HORNY = 65.0;
+	private final static double WASTE = 1.2;
 
 	protected String _genetic_code;
 	protected Diet _diet;
@@ -103,34 +107,165 @@ public abstract class Animal implements Entity, AnimalInfo {
 		return jo1;
 	}
 	
-	protected boolean isDead() {
-		
-		return _state.equals(State.DEAD);
+	protected void advance(double desire_gain, double energy_loose, double dt) {
+
+		if (this._pos.distanceTo(this._dest) < REACH_DISTANCE)
+			set_RandomDest();
+		move(velocity(dt));
+		getOlder(dt);
+		loseEnergy(energy_loose,dt);
+		gainDesire(desire_gain, dt);
 	}
 	
-	protected void setStateToNormal() {
-		
-		this._state = State.NORMAL;
-		this._mate_target = null;
+	protected void specialAdvance(double desire_gain, double energy_loose, double run_buff, double dt) {
+
+		move(velocity(run_buff * dt));
+		getOlder(dt);
+		loseEnergy(energy_loose,WASTE * dt);
+		gainDesire(desire_gain, dt);
 	}
 	
 	protected double velocity(double dt) {
-		
-		return this._speed*dt*Math.exp((this._energy-ENERGY)*SPEED_FORCE);
+
+		return this._speed * dt * Math.exp((this._energy - ENERGY) * SPEED_FORCE);
+	}
+	
+	protected void getOlder(double dt) {
+
+		this._age += dt;
+	}
+
+	protected boolean isDead() {
+
+		return _state.equals(State.DEAD);
+	}
+
+	protected void setStateToNormal() {
+
+		this._state = State.NORMAL;
+		this._mate_target = null;
+	}
+
+	protected void setStateToDead() {
+
+		this._state = State.DEAD;
 	}
 
 	protected boolean isOutOfRange(Animal a) {
-		
+
 		return this._pos.distanceTo(a.get_position()) > this._sight_range;
+	}
+
+	protected void lookForMate() {
+
+		this._mate_target = search();
+	}
+
+	protected boolean isHorny() {
+
+		return this._desire > HORNY;
+	}
+
+	protected boolean isInLove() {
+
+		return this._mate_target != null;
+	}
+
+	protected void eat(double dt) {
+
+		this._energy += this._region_mngr.get_food(this, dt);
+		if (this._energy > ENERGY)
+			this._energy = ENERGY;
+	}
+
+	protected void gainDesire(double desire_gain, double dt) {
+
+		this._desire += desire_gain * dt;
+		if (this._desire > MAX_DESIRE)
+			this._desire = MAX_DESIRE;
+	}
+
+	protected void loseEnergy(double energy_loose, double dt) {
+
+		this._energy -= energy_loose * dt;
+		if (this._energy < MIN_ENERGY)
+			this._energy = MIN_ENERGY;
+	}
+
+	protected void towardsToMate() {
+
+		this._dest = this._mate_target.get_position();
 	}
 	
 	protected void resetDesire() {
-		
+
 		this._desire = 0.0;
 	}
 
 	protected boolean canHaveBaby() {
-		
-		return Utils.get_randomized_parameter(1,1) < BABY_CHANCE;
+
+		return Utils.get_randomized_parameter(1, 1) < BABY_CHANCE;
 	}
+
+	@Override
+	public State get_state() {
+
+		return this._state;
+	}
+
+	@Override
+	public Vector2D get_position() {
+
+		return this._pos;
+	}
+
+	@Override
+	public String get_genetic_code() {
+
+		return this._genetic_code;
+	}
+
+	@Override
+	public Diet get_diet() {
+
+		return this._diet;
+	}
+
+	@Override
+	public double get_speed() {
+
+		return this._speed;
+	}
+
+	@Override
+	public double get_sight_range() {
+
+		return this._sight_range;
+	}
+
+	@Override
+	public double get_energy() {
+
+		return this._energy;
+	}
+
+	@Override
+	public double get_age() {
+
+		return this._age;
+	}
+
+	@Override
+	public Vector2D get_destination() {
+
+		return this._dest;
+	}
+
+	@Override
+	public boolean is_pregnant() {
+
+		return this._baby != null;
+	}
+
+
 }

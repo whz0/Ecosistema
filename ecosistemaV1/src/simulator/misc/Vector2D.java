@@ -2,6 +2,8 @@ package simulator.misc;
 
 import org.json.JSONArray;
 
+import simulator.model.MapInfo;
+
 public class Vector2D {
 
 	double _x;
@@ -111,7 +113,7 @@ public class Vector2D {
 		assert (y >= min && y <= max);
 		return new Vector2D(x, y);
 	}
-	
+
 	public static Double get_random_pos(double min, double max) {
 		double d = min + Utils._rand.nextDouble(max - min);
 		assert (d >= min && d <= max);
@@ -158,17 +160,21 @@ public class Vector2D {
 		return "[" + _x + "," + _y + "]";
 	}
 
-	public void fixPos() {
-		
-		while (_x >= width) _x = (_x - width);
-		while (_x < 0) _x = (_x + width);
-		while (_y >= height) _y = (_y - height);
-		while (_y < 0) _y = (_y + height);
+	public void fixPos(MapInfo map) {
+
+		while (_x >= map.get_width())
+			_x = (_x - map.get_width());
+		while (_x < 0)
+			_x = (_x + map.get_width());
+		while (_y >= map.get_height())
+			_y = (_y - map.get_height());
+		while (_y < 0)
+			_y = (_y + map.get_height());
 
 	}
 
-	public boolean isOutOfMap() {
-		
+	public boolean isOutOfMap(MapInfo map) {
+
 		return 1 == 0;
 	}
 
