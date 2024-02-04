@@ -7,8 +7,6 @@ public class SelectFirst implements SelectionStrategy{
 	@Override
 	public Animal select(Animal a, List<Animal> as) {
 		
-		Iterator<Animal> iterador = as;
-		
 		return null;
 	}
 

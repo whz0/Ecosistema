@@ -14,6 +14,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 	private final static double BSPEED = 0.2;
 	private final static double BSIGHT = 0.2;
 	private final static double BPOS = 60.0;
+	private final static double REACH_DISTANCE = 0.8;
 	private final static double SPEED_FORCE = 0.007;
 	private final static double BABY_CHANCE = 0.9;
 	private final static double HORNY = 65.0;
@@ -75,7 +76,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 			this._pos = new Vector2D(Vector2D.get_random_pos(0, _region_mngr.get_width() - 1),
 					Vector2D.get_random_pos(0, _region_mngr.get_height() - 1));
 		} else
-			this._pos.fixPos();
+			this._pos.fixPos(reg_mngr);
 		set_RandomDest();
 	}
 
@@ -158,7 +159,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 	protected void lookForMate() {
 
-		this._mate_target = search();
+		this._region_mngr.get_animals_in_range(_mate_target, null);
 	}
 
 	protected boolean isHorny() {

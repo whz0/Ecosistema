@@ -175,7 +175,7 @@ public class Vector2D {
 
 	public boolean isOutOfMap(MapInfo map) {
 
-		return 1 == 0;
+		return _x > map.get_width() || _x < 0 || _y > map.get_height() || _y < 0;
 	}
 
 }
