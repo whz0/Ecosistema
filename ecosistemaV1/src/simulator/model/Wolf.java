@@ -1,5 +1,8 @@
 package simulator.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import simulator.misc.Vector2D;
 
 public class Wolf extends Animal {
@@ -82,7 +85,7 @@ public class Wolf extends Animal {
 		if (isHungry())
 			setStateToHunger();
 		else {
-			if (!isHorny())
+			if (!hasDesireToMate())
 				setStateToNormal();
 		}
 	}
@@ -100,7 +103,7 @@ public class Wolf extends Animal {
 				hunt();
 		}
 		if (!isHungry()) {
-			if (!isHorny())
+			if (!hasDesireToMate())
 				setStateToNormal();
 			else
 				setStateToMate();
@@ -114,7 +117,7 @@ public class Wolf extends Animal {
 		if (isHungry())
 			setStateToHunger();
 		else {
-			if (isHorny())
+			if (hasDesireToMate())
 				setStateToMate();
 		}
 
@@ -155,7 +158,10 @@ public class Wolf extends Animal {
 
 	private void lookForFood() {
 
-		this._hunter_target = search();
+		List<Animal> animal = new ArrayList<Animal>();
+		animal = this._region_mngr.get_animals_in_range(this,
+				(a) -> !(this.get_genetic_code().equals(a.get_genetic_code())));
+		this._hunter_target= this._hunting_strategy.select(this, animal);
 	}
 
 	private void setStateToHunger() {

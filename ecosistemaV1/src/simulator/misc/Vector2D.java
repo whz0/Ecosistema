@@ -178,4 +178,9 @@ public class Vector2D {
 		return _x > map.get_width() || _x < 0 || _y > map.get_height() || _y < 0;
 	}
 
+	public Vector2D max_range(double range) {
+
+		return new Vector2D(this._x + range, this._y + range);
+	}
+
 }

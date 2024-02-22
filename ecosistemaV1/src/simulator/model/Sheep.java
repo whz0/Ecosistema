@@ -79,9 +79,10 @@ public class Sheep extends Animal {
 		}
 		if (!isInDanger())
 			lookForDanger();
+
 		else {
 			setStateToDanger();
-			if (!isInDanger() && !isHorny())
+			if (!isInDanger() && !hasDesireToMate())
 				setStateToNormal();
 		}
 	}
@@ -96,13 +97,13 @@ public class Sheep extends Animal {
 			runFromDanger();
 			specialAdvance(DESIRE, ENERGY, RUN_BUFF, dt);
 		}
-		if (isInDanger() || this._danger_source.isOutOfRange(this))
+		if (!isInDanger() || this._danger_source.isOutOfRange(this))
 			lookForDanger();
-		else {
-			if (!isHorny())
-				setStateToNormal();
-			else
+		if (!isInDanger()) {
+			if (hasDesireToMate())
 				setStateToMate();
+			else
+				setStateToNormal();
 		}
 
 	}
@@ -112,10 +113,10 @@ public class Sheep extends Animal {
 		advance(DESIRE, ENERGY, dt);
 		if (!isInDanger())
 			lookForDanger();
+		if (!isInDanger() && hasDesireToMate())
+			setStateToMate();
 		else {
 			setStateToDanger();
-			if (isHorny())
-				setStateToMate();
 		}
 
 	}
@@ -132,7 +133,7 @@ public class Sheep extends Animal {
 
 	private void lookForDanger() {
 
-		this._danger_source = search();
+		this._region_mngr.get_animals_in_range(this, (a) -> a.get_diet().equals(Diet.CARNIVORE));
 	}
 
 	@Override

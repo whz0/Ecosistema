@@ -1,5 +1,8 @@
 package simulator.model;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.json.JSONObject;
 
 import simulator.misc.Utils;
@@ -17,7 +20,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 	private final static double REACH_DISTANCE = 0.8;
 	private final static double SPEED_FORCE = 0.007;
 	private final static double BABY_CHANCE = 0.9;
-	private final static double HORNY = 65.0;
+	private final static double DESIRE_TO_MATE = 65.0;
 	private final static double WASTE = 1.2;
 
 	protected String _genetic_code;
@@ -107,30 +110,30 @@ public abstract class Animal implements Entity, AnimalInfo {
 		jo1.put("state", this._state.toString());
 		return jo1;
 	}
-	
+
 	protected void advance(double desire_gain, double energy_loose, double dt) {
 
 		if (this._pos.distanceTo(this._dest) < REACH_DISTANCE)
 			set_RandomDest();
 		move(velocity(dt));
 		getOlder(dt);
-		loseEnergy(energy_loose,dt);
+		loseEnergy(energy_loose, dt);
 		gainDesire(desire_gain, dt);
 	}
-	
+
 	protected void specialAdvance(double desire_gain, double energy_loose, double run_buff, double dt) {
 
 		move(velocity(run_buff * dt));
 		getOlder(dt);
-		loseEnergy(energy_loose,WASTE * dt);
+		loseEnergy(energy_loose, WASTE * dt);
 		gainDesire(desire_gain, dt);
 	}
-	
+
 	protected double velocity(double dt) {
 
 		return this._speed * dt * Math.exp((this._energy - ENERGY) * SPEED_FORCE);
 	}
-	
+
 	protected void getOlder(double dt) {
 
 		this._age += dt;
@@ -159,12 +162,15 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 	protected void lookForMate() {
 
-		this._region_mngr.get_animals_in_range(_mate_target, null);
+		List<Animal> animal = new ArrayList<Animal>();
+		animal = this._region_mngr.get_animals_in_range(this,
+				(a) -> this.get_genetic_code().equals(a.get_genetic_code()));
+		this._mate_target = this._mate_strategy.select(this, animal);
 	}
 
-	protected boolean isHorny() {
+	protected boolean hasDesireToMate() {
 
-		return this._desire > HORNY;
+		return this._desire > DESIRE_TO_MATE;
 	}
 
 	protected boolean isInLove() {
@@ -197,7 +203,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 		this._dest = this._mate_target.get_position();
 	}
-	
+
 	protected void resetDesire() {
 
 		this._desire = 0.0;
@@ -205,7 +211,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 	protected boolean canHaveBaby() {
 
-		return Utils.get_randomized_parameter(1, 1) < BABY_CHANCE;
+		return Utils._rand.nextDouble() < BABY_CHANCE;
 	}
 
 	@Override
@@ -267,6 +273,5 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 		return this._baby != null;
 	}
-
 
 }

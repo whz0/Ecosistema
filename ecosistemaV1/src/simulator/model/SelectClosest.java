@@ -1,20 +1,25 @@
 package simulator.model;
 
-import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
-public class SelectClosest implements SelectionStrategy, Comparator<Animal>{
+public class SelectClosest implements SelectionStrategy {
 
 	@Override
 	public Animal select(Animal a, List<Animal> as) {
-		
-		return null;
-	}
 
-	@Override
-	public int compare(Animal o1, Animal o2) {
-		
-		return 0;
+		Iterator<Animal> i = as.iterator();
+		double min = a.get_sight_range();
+		Animal a1 = null;
+
+		while (i.hasNext()) {
+			Animal a2;
+			a2 = i.next();
+			if (a.get_position().distanceTo(a2.get_position()) <= min)
+				a1 = a2;
+		}
+
+		return a1;
 	}
 
 }
