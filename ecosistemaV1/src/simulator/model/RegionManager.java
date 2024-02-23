@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.function.Predicate;
 
 import org.json.JSONArray;
@@ -30,7 +31,7 @@ public class RegionManager implements AnimalMapView {
 		this._region_width = width / cols;
 		this._region_height = height / rows;
 		this._region = new DefaultRegion[this._cols][this._rows];
-		this._animal_region.put(null, null);
+		this._animal_region = new HashMap<Animal, Region>();
 	}
 
 	void set_region(int row, int col, Region r) {
