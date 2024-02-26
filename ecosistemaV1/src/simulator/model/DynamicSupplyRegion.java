@@ -1,7 +1,5 @@
 package simulator.model;
 
-import org.json.JSONObject;
-
 import simulator.misc.Utils;
 
 public class DynamicSupplyRegion extends Region {
@@ -9,8 +7,8 @@ public class DynamicSupplyRegion extends Region {
 	private double _food;
 	private double _factor;
 
-	public DynamicSupplyRegion(JSONObject j, double food, double factor) {
-		super(j);
+	public DynamicSupplyRegion(double food, double factor) {
+		super();
 		this._food = food;
 		this._factor = factor;
 	}

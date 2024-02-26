@@ -1,11 +1,9 @@
 package simulator.model;
 
-import org.json.JSONObject;
-
 public class DefaultRegion extends Region {
 
-	public DefaultRegion(JSONObject j) {
-		super(j);
+	public DefaultRegion() {
+		super();
 	}
 
 	@Override

@@ -180,7 +180,7 @@ public class Vector2D {
 
 	public Vector2D max_range(double range) {
 
-		return new Vector2D(this._x + range, this._y + range);
+		return new Vector2D(this._x - range, this._y + range);
 	}
 
 }

@@ -104,7 +104,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 		JSONObject jo1 = new JSONObject();
 
-		jo1.put("pos:", this._pos.asJSONArray());
+		jo1.put("pos", this._pos.asJSONArray());
 		jo1.put("gcode", this._genetic_code);
 		jo1.put("diet", this._diet.toString());
 		jo1.put("state", this._state.toString());

@@ -1,16 +1,18 @@
 package simulator.model;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 public abstract class Region implements Entity, RegionInfo, FoodSupplier {
 
 	protected List<Animal> animales;
 
-	public Region(JSONObject j) {
-
+	public Region() {
+		animales = new ArrayList<Animal>();
 	}
 
 	@Override
@@ -49,11 +51,13 @@ public abstract class Region implements Entity, RegionInfo, FoodSupplier {
 	public JSONObject as_JSON() {
 
 		JSONObject jo = new JSONObject();
+		JSONArray ja = new JSONArray();
 		Iterator<Animal> i = animales.iterator();
 		while (i.hasNext()) {
 			Animal a = i.next();
-			jo.put("queso", a.as_JSON());
+			ja.put(a.as_JSON());
 		}
+		jo.put("animals", ja);
 
 		return jo;
 	}

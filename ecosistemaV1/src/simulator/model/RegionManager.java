@@ -71,7 +71,7 @@ public class RegionManager implements AnimalMapView {
 
 	public double get_food(Animal a, double dt) {
 
-		return 0;
+		return _animal_region.get(a).get_food(a, dt);
 	}
 
 	void update_all_regions(double dt) {
@@ -115,15 +115,15 @@ public class RegionManager implements AnimalMapView {
 		for (int i = 0; i < _rows; i++) {
 			for (int j = 0; j < _cols; j++) {
 				JSONObject jo = new JSONObject();
-				jo.put("row:", this._rows);
-				jo.put("cols:", this._cols);
-				jo.put("data:", this._region[i][j].as_JSON());
+				jo.put("row", this._rows);
+				jo.put("col", this._cols);
+				jo.put("data", this._region[i][j].as_JSON());
 				ja.put(jo);
 			}
 		}
 		JSONObject j = new JSONObject();
 
-		j.put("regiones:", ja);
+		j.put("regions", ja);
 
 		return j;
 	}

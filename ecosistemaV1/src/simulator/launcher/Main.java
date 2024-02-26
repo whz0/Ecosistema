@@ -3,6 +3,9 @@ package simulator.launcher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -13,7 +16,15 @@ import org.apache.commons.cli.ParseException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import simulator.control.Controler;
+import simulator.factories.BuilderBasedFactory;
+import simulator.factories.Factory;
 import simulator.misc.Utils;
+import simulator.model.Animal;
+import simulator.model.Region;
+import simulator.model.SelectionStrategy;
+import simulator.model.Simulator;
+import simulator.view.SimpleObjectViewer;
 
 public class Main {
 
@@ -45,7 +56,14 @@ public class Main {
 	//
 	private static Double _time = null;
 	private static String _in_file = null;
+	private static String _out_file = null;
 	private static ExecMode _mode = ExecMode.BATCH;
+	private static Factory<SelectionStrategy> _selection;
+	private static Factory<Region> _region;
+	private static Factory<Animal> _animal;
+	private static Controler _controler;
+	private static Simulator _simulator;
+	private static SimpleObjectViewer _visor;
 
 	private static void parse_args(String[] args) {
 
@@ -61,7 +79,8 @@ public class Main {
 			parse_help_option(line, cmdLineOptions);
 			parse_in_file_option(line);
 			parse_time_option(line);
-
+			parse_out_file_option(line);
+			parse_viewer_option(line);
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
 			//
@@ -95,7 +114,24 @@ public class Main {
 						+ _default_time + ".")
 				.build());
 
+		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg().desc("A output file.").build());
+
+		cmdLineOptions.addOption(Option.builder("sv").longOpt("simple-viewer").desc("Viewer mode in console.").build());
+
 		return cmdLineOptions;
+	}
+
+	private static void parse_out_file_option(CommandLine line) throws ParseException {
+		_out_file = line.getOptionValue("o");
+		if (_mode == ExecMode.BATCH && _out_file == null) {
+			throw new ParseException("In batch mode an output configuration file is required");
+		}
+	}
+
+	private static void parse_viewer_option(CommandLine line) throws ParseException {
+		
+		String v = line.getOptionValue("sv");
+		
 	}
 
 	private static void parse_help_option(CommandLine line, Options cmdLineOptions) {
@@ -124,6 +160,10 @@ public class Main {
 	}
 
 	private static void init_factories() {
+
+		_selection = BuilderBasedFactory.initialize_selection_strategy_builders();
+		_region = BuilderBasedFactory.initialize_regions_builder();
+		_animal = BuilderBasedFactory.initialize_animals_builders();
 	}
 
 	private static JSONObject load_JSON_file(InputStream in) {
@@ -131,7 +171,17 @@ public class Main {
 	}
 
 	private static void start_batch_mode() throws Exception {
-		InputStream is = new FileInputStream(new File(_in_file));
+		try (InputStream is = new FileInputStream(new File(_in_file))) {
+			try (OutputStream out = new FileOutputStream(new File(_out_file))) {
+				JSONObject j = load_JSON_file(is);
+				_simulator = new Simulator(j.getInt("width"), j.getInt("height"), j.getInt("row"), j.getInt("cols"),
+						_animal, _region);
+				_controler = new Controler(_simulator);
+				_controler.load_data(j);
+				_controler.run(_time, _default_time, false, out);
+				out.close();
+			}
+		}
 	}
 
 	private static void start_GUI_mode() throws Exception {
