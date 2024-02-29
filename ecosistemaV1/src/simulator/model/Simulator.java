@@ -19,11 +19,11 @@ public class Simulator implements JSONable {
 
 	public Simulator(int cols, int rows, int width, int height, Factory<Animal> animals_factory,
 			Factory<Region> regions_factory) {
-		manager = new RegionManager(cols, rows, width, height);
-		animales = new ArrayList<Animal>();
+		this.manager = new RegionManager(cols, rows, width, height);
+		this.animales = new ArrayList<Animal>();
 		this.animal_factory = animals_factory;
 		this.regions_factory = regions_factory;
-		time = 0.0;
+		this.time = 0.0;
 	}
 
 	private void set_region(int row, int col, Region r) {
@@ -65,23 +65,28 @@ public class Simulator implements JSONable {
 	public void advance(double dt) {
 
 		time += dt;
-		Iterator<Animal> i = animales.iterator();
+		Iterator<Animal> i = this.animales.iterator();
+		List<Animal> aux = new ArrayList<Animal>();
+		List<Animal> eliminad = new ArrayList<Animal>();
 		while (i.hasNext()) {
 			Animal a = i.next();
 			if (a.isDead()) {
+				eliminad.add(a);
 				this.manager.unregister_animal(a);
-				this.animales.remove(a);
+
 			} else {
 				a.update(dt);
 				this.manager.update_animal_region(a);
-			}
-			if (a.is_pregnant()) {
-				Animal baby = a.deliver_baby();
-				this.manager.register_animal(baby);
-				this.animales.add(baby);
+				if (a.is_pregnant()) {
+					Animal baby = a.deliver_baby();
+					aux.add(baby);
+					this.manager.register_animal(baby);
+				}
 			}
 		}
 		this.manager.update_all_regions(dt);
+		this.animales.addAll(aux);
+		this.animales.removeAll(eliminad);
 	}
 
 	public JSONObject as_JSON() {

@@ -54,12 +54,12 @@ public class Wolf extends Animal {
 			if (this._pos.isOutOfMap(this._region_mngr)) {
 				this._pos.fixPos(this._region_mngr);
 				setStateToNormal();
-				if (this._energy > MIN_ENERGY || this._age <= MAX_AGE) {
-					if (!isDead())
-						eat(dt);
-				} else
-					setStateToDead();
 			}
+			if (this._energy == MIN_ENERGY || this._age >= MAX_AGE)
+				setStateToDead();
+			if (!isDead())
+				eat(dt);
+
 		}
 	}
 
@@ -67,27 +67,25 @@ public class Wolf extends Animal {
 
 		if (isInLove() && (this._mate_target.isDead() || isOutOfRange(this._mate_target)))
 			this._mate_target = null;
-		else {
+		if (!isInLove())
 			lookForMate();
-			if (!isInLove())
-				advance(DESIRE, ENERGY, dt);
-			else {
-				towardsToMate();
-				specialAdvance(DESIRE, ENERGY, RUN_BUFF, dt);
-				if (this._pos.distanceTo(this._mate_target.get_position()) < REACH_DISTANCE) {
-					resetDesire();
-					this._mate_target.resetDesire();
-					if (canHaveBaby())
-						haveBaby();
-				}
+		if (!isInLove())
+			advance(DESIRE, ENERGY, dt);
+		else {
+			towardsToMate();
+			specialAdvance(DESIRE, ENERGY, RUN_BUFF, dt);
+			if (this._pos.distanceTo(this._mate_target.get_position()) < REACH_DISTANCE) {
+				resetDesire();
+				this._mate_target.resetDesire();
+				if (canHaveBaby())
+					haveBaby();
 			}
 		}
 		if (isHungry())
 			setStateToHunger();
-		else {
-			if (!hasDesireToMate())
-				setStateToNormal();
-		}
+		else if (!hasDesireToMate())
+			setStateToNormal();
+
 	}
 
 	private void hungerStateUpdate(double dt) {
@@ -116,10 +114,8 @@ public class Wolf extends Animal {
 		advance(DESIRE, ENERGY, dt);
 		if (isHungry())
 			setStateToHunger();
-		else {
-			if (hasDesireToMate())
-				setStateToMate();
-		}
+		else if (!isHungry() && hasDesireToMate())
+			setStateToMate();
 
 	}
 
@@ -161,7 +157,7 @@ public class Wolf extends Animal {
 		List<Animal> animal = new ArrayList<Animal>();
 		animal = this._region_mngr.get_animals_in_range(this,
 				(a) -> !(this.get_genetic_code().equals(a.get_genetic_code())));
-		this._hunter_target= this._hunting_strategy.select(this, animal);
+		this._hunter_target = this._hunting_strategy.select(this, animal);
 	}
 
 	private void setStateToHunger() {

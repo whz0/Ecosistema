@@ -41,6 +41,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed,
 			SelectionStrategy mate_strategy, Vector2D pos) {
 
+		this._age = 0.0;
 		this._genetic_code = genetic_code;
 		this._diet = diet;
 		this._sight_range = sight_range;
@@ -70,6 +71,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 				.plus(Vector2D.get_random_vector(-1, 1).scale(BPOS * (Utils._rand.nextGaussian() + 1)));
 		this._sight_range = Utils.get_randomized_parameter((p1.get_sight_range() + p2.get_sight_range()) / 2, BSIGHT);
 		this._speed = Utils.get_randomized_parameter((p1.get_speed() + p2.get_speed()) / 2, BSPEED);
+		this._mate_strategy = p2._mate_strategy;
 	}
 
 	protected void init(AnimalMapView reg_mngr) {
@@ -272,6 +274,10 @@ public abstract class Animal implements Entity, AnimalInfo {
 	public boolean is_pregnant() {
 
 		return this._baby != null;
+	}
+
+	public boolean equals(Animal a) {
+		return this != a && this._genetic_code.equals(a._genetic_code);
 	}
 
 }

@@ -11,11 +11,11 @@ import simulator.model.SelectFirst;
 
 public class SheepBuilder extends Builder<Animal> {
 
-	BuilderBasedFactory<SelectionStrategy> factory_builder;
+	Factory<SelectionStrategy> factory_builder;
 
-	public SheepBuilder(BuilderBasedFactory<SelectionStrategy> factory_builder) {
+	public SheepBuilder(Factory<SelectionStrategy> _selection) {
 		super("sheep", "it's a builder for sheep");
-		this.factory_builder = factory_builder;
+		this.factory_builder = _selection;
 	}
 
 	@Override
@@ -28,11 +28,11 @@ public class SheepBuilder extends Builder<Animal> {
 		if (data.has("mate_strategy") && !data.isNull("mate_strategy"))
 			mate_strategy = factory_builder.create_instance(data.getJSONObject("mate_strategy"));
 		else
-			mate_strategy = factory_builder.create_instance(new JSONObject(new SelectFirst()));
+			mate_strategy = new SelectFirst();
 		if (data.has("hunt_strategy") && !data.isNull("hunt_strategy"))
 			danger_strategy = factory_builder.create_instance(data.getJSONObject("hunt_strategy"));
 		else
-			danger_strategy = factory_builder.create_instance(new JSONObject("type"));
+			danger_strategy = new SelectFirst();
 		if (data.has("pos") && !data.isNull("pos")) {
 			JSONArray jaX = data.getJSONObject("pos").getJSONArray("x_range");
 			JSONArray jaY = data.getJSONObject("pos").getJSONArray("y_range");

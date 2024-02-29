@@ -5,16 +5,17 @@ import org.json.JSONObject;
 
 import simulator.misc.Vector2D;
 import simulator.model.Animal;
+import simulator.model.SelectFirst;
 import simulator.model.SelectionStrategy;
 import simulator.model.Wolf;
 
 public class WolfBuilder extends Builder<Animal> {
 
-	BuilderBasedFactory<SelectionStrategy> factory_builder;
+	Factory<SelectionStrategy> factory_builder;
 
-	public WolfBuilder(BuilderBasedFactory<SelectionStrategy> factory_builder) {
+	public WolfBuilder(Factory<SelectionStrategy> _selection) {
 		super("wolf", "it's a builder for wolf");
-		this.factory_builder = factory_builder;
+		this.factory_builder = _selection;
 	}
 
 	@Override
@@ -25,11 +26,11 @@ public class WolfBuilder extends Builder<Animal> {
 		if (data.has("mate_strategy") && !data.isNull("mate_strategy"))
 			mate_strategy = factory_builder.create_instance(data.getJSONObject("mate_strategy"));
 		else
-			mate_strategy = factory_builder.create_instance(new JSONObject("select_first"));
+			mate_strategy = new SelectFirst();
 		if (data.has("hunt_strategy") && !data.isNull("hunt_strategy"))
 			hunt_strategy = factory_builder.create_instance(data.getJSONObject("hunt_strategy"));
 		else
-			hunt_strategy = factory_builder.create_instance(new JSONObject("select_first"));
+			hunt_strategy = new SelectFirst();
 		if (data.has("pos") && !data.isNull("pos")) {
 			JSONArray jaX = data.getJSONObject("pos").getJSONArray("x_range");
 			JSONArray jaY = data.getJSONObject("pos").getJSONArray("y_range");

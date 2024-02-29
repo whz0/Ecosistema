@@ -47,12 +47,14 @@ public class Sheep extends Animal {
 			if (this._pos.isOutOfMap(this._region_mngr)) {
 				this._pos.fixPos(this._region_mngr);
 				setStateToNormal();
-				if (this._energy != 0.0 || this._age <= MAX_AGE) {
-					if (!isDead())
-						eat(dt);
-				} else
-					this._state = State.DEAD;
 			}
+			if (this._energy == 0.0 || this._age >= MAX_AGE) {
+				this._state = State.DEAD;
+			}
+			if (!isDead()) {
+				eat(dt);
+			}
+
 		}
 	}
 
@@ -60,31 +62,29 @@ public class Sheep extends Animal {
 
 		if (isInLove() && (this._mate_target.isDead() || isOutOfRange(this._mate_target)))
 			this._mate_target = null;
-		else {
+		if (!isInLove())
 			lookForMate();
-			if (!isInLove())
-				advance(DESIRE, ENERGY, dt);
-			else {
-				towardsToMate();
-				specialAdvance(DESIRE, ENERGY, RUN_BUFF, dt);
-				if (this._pos.distanceTo(this._mate_target.get_position()) < REACH_DISTANCE) {
-					resetDesire();
-					this._mate_target.resetDesire();
-					if (canHaveBaby()) {
-						this._baby = new Sheep(this, this._mate_target);
-						this._mate_target = null;
-					}
+		if (!isInLove())
+			advance(DESIRE, ENERGY, dt);
+		else {
+			towardsToMate();
+			specialAdvance(DESIRE, ENERGY, RUN_BUFF, dt);
+			if (this._pos.distanceTo(this._mate_target.get_position()) < REACH_DISTANCE) {
+				resetDesire();
+				this._mate_target.resetDesire();
+				if (canHaveBaby()) {
+					this._baby = new Sheep(this, this._mate_target);
+					this._mate_target = null;
 				}
 			}
 		}
 		if (!isInDanger())
 			lookForDanger();
-
-		else {
+		if (isInDanger())
 			setStateToDanger();
-			if (!isInDanger() && !hasDesireToMate())
-				setStateToNormal();
-		}
+		else if (!isInDanger() && !hasDesireToMate())
+			setStateToNormal();
+
 	}
 
 	private void dangerStateUpdate(double dt) {
@@ -115,9 +115,8 @@ public class Sheep extends Animal {
 			lookForDanger();
 		if (!isInDanger() && hasDesireToMate())
 			setStateToMate();
-		else {
+		else if (isInDanger())
 			setStateToDanger();
-		}
 
 	}
 

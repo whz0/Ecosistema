@@ -8,18 +8,20 @@ public class SelectYoungest implements SelectionStrategy {
 	@Override
 	public Animal select(Animal a, List<Animal> as) {
 
-		Iterator<Animal> i = as.iterator();
-		double min = -1;
-		Animal a1 = null;
+		if (!as.isEmpty()) {
+			Iterator<Animal> i = as.iterator();
+			double min = -1;
+			Animal a1 = null;
 
-		while (i.hasNext()) {
-			Animal a2;
-			a2 = i.next();
-			if (min == -1 || a2.get_age() <= min)
-				a1 = a2;
+			while (i.hasNext()) {
+				Animal a2;
+				a2 = i.next();
+				if (min == -1 || a2.get_age() <= min)
+					a1 = a2;
+			}
+			return a1;
 		}
-
-		return a1;
+		return null;
 	}
 
 }
