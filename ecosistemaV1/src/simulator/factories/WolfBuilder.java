@@ -11,7 +11,7 @@ import simulator.model.Wolf;
 
 public class WolfBuilder extends Builder<Animal> {
 
-	Factory<SelectionStrategy> factory_builder;
+	private Factory<SelectionStrategy> factory_builder;
 
 	public WolfBuilder(Factory<SelectionStrategy> _selection) {
 		super("wolf", "it's a builder for wolf");

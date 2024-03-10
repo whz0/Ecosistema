@@ -9,6 +9,8 @@ public class DynamicSupplyRegion extends Region {
 
 	public DynamicSupplyRegion(double food, double factor) {
 		super();
+		if (food <= 0 || factor <= 0)
+			throw new IllegalArgumentException("food and factor can`t be negative or zero");
 		this._food = food;
 		this._factor = factor;
 	}

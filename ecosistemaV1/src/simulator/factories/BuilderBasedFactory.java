@@ -20,6 +20,8 @@ public class BuilderBasedFactory<T> implements Factory<T> {
 	public BuilderBasedFactory(List<Builder<T>> builders) {
 
 		this();
+		if (builders.isEmpty())
+			throw new IllegalArgumentException("Builders list can't be empty");
 		for (Builder<T> b : builders) {
 			add_builder(b);
 		}

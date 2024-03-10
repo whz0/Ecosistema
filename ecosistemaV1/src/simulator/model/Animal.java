@@ -40,24 +40,22 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed,
 			SelectionStrategy mate_strategy, Vector2D pos) throws IllegalArgumentException {
-		try {
-			this._age = 0.0;
-			this._genetic_code = genetic_code;
-			this._diet = diet;
-			this._sight_range = sight_range;
-			this._pos = pos;
-			this._mate_strategy = mate_strategy;
-			this._speed = Utils.get_randomized_parameter(init_speed, SPEED);
-			this._state = State.NORMAL;
-			this._energy = ENERGY;
-			this._desire = 0.0;
-			this._dest = null;
-			this._mate_target = null;
-			this._baby = null;
-			this._region_mngr = null;
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Incorrect argument in Animal");
-		}
+		if (genetic_code == null || diet == null || sight_range <= 0 || init_speed <= 0 || mate_strategy == null)
+			throw new IllegalArgumentException("Invalid genetic_code/diet/sight_rangeinit_speed/mate_strategy");
+		this._age = 0.0;
+		this._genetic_code = genetic_code;
+		this._diet = diet;
+		this._sight_range = sight_range;
+		this._pos = pos;
+		this._mate_strategy = mate_strategy;
+		this._speed = Utils.get_randomized_parameter(init_speed, SPEED);
+		this._state = State.NORMAL;
+		this._energy = ENERGY;
+		this._desire = 0.0;
+		this._dest = null;
+		this._mate_target = null;
+		this._baby = null;
+		this._region_mngr = null;
 	}
 
 	protected Animal(Animal p1, Animal p2) {

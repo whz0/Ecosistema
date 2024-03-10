@@ -11,7 +11,7 @@ import simulator.model.SelectFirst;
 
 public class SheepBuilder extends Builder<Animal> {
 
-	Factory<SelectionStrategy> factory_builder;
+	private Factory<SelectionStrategy> factory_builder;
 
 	public SheepBuilder(Factory<SelectionStrategy> _selection) {
 		super("sheep", "it's a builder for sheep");

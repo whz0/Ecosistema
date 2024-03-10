@@ -19,6 +19,8 @@ public class Simulator implements JSONable {
 
 	public Simulator(int cols, int rows, int width, int height, Factory<Animal> animals_factory,
 			Factory<Region> regions_factory) {
+		if (animals_factory == null || regions_factory == null)
+			throw new IllegalArgumentException("Invalid animals_factory/regions_factory");
 		this.manager = new RegionManager(cols, rows, width, height);
 		this.animales = new ArrayList<Animal>();
 		this.animal_factory = animals_factory;

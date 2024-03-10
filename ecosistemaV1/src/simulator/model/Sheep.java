@@ -21,12 +21,10 @@ public class Sheep extends Animal {
 	public Sheep(SelectionStrategy mate_strategy, SelectionStrategy danger_strategy, Vector2D pos)
 			throws IllegalArgumentException {
 		super("Sheep", Diet.HERVIBORE, INIT_SIGHT, INIT_SPEED, mate_strategy, pos);
-		try {
-			this._danger_strategy = danger_strategy;
-			this._danger_source = null;
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Incorrect argument in Sheep", e);
-		}
+		if (danger_strategy == null)
+			throw new IllegalArgumentException("Invalid danger_strategy");
+		this._danger_strategy = danger_strategy;
+		this._danger_source = null;
 	}
 
 	protected Sheep(Sheep p1, Animal p2) {

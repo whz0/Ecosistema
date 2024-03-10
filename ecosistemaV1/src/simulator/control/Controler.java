@@ -18,7 +18,9 @@ public class Controler {
 
 	private Simulator _sim;
 
-	public Controler(Simulator sim) {
+	public Controler(Simulator sim) throws IllegalArgumentException {
+		if (sim == null)
+			throw new IllegalArgumentException("Invalid sim");
 		this._sim = sim;
 	}
 

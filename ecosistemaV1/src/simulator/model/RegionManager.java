@@ -23,7 +23,9 @@ public class RegionManager implements AnimalMapView {
 	private Region[][] _region;
 	private Map<Animal, Region> _animal_region;
 
-	public RegionManager(int cols, int rows, int width, int height) {
+	public RegionManager(int cols, int rows, int width, int height) throws IllegalArgumentException {
+		if (cols <= 0 || rows <= 0 || width <= 0 || height <= 0)
+			throw new IllegalArgumentException("Regions size can`t zero or negative");
 		this._cols = cols;
 		this._rows = rows;
 		this._width = width;
@@ -35,6 +37,7 @@ public class RegionManager implements AnimalMapView {
 			for (int j = 0; j < this._cols; j++)
 				_region[i][j] = new DefaultRegion();
 		this._animal_region = new HashMap<Animal, Region>();
+
 	}
 
 	void set_region(int row, int col, Region r) {

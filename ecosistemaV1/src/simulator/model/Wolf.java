@@ -26,12 +26,10 @@ public class Wolf extends Animal {
 	public Wolf(SelectionStrategy mate_strategy, SelectionStrategy hunting_strategy, Vector2D pos)
 			throws IllegalArgumentException {
 		super("Wolf", Diet.CARNIVORE, INIT_SIGHT, INIT_SPEED, mate_strategy, pos);
-		try {
-			this._hunting_strategy = hunting_strategy;
-			this._hunter_target = null;
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Incorrect argument in Wolf", e);
-		}
+		if (hunting_strategy == null)
+			throw new IllegalArgumentException("Invalid hunting_strategy");
+		this._hunting_strategy = hunting_strategy;
+		this._hunter_target = null;
 	}
 
 	protected Wolf(Wolf p1, Animal p2) {
