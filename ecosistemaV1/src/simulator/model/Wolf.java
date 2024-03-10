@@ -23,9 +23,15 @@ public class Wolf extends Animal {
 	private Animal _hunter_target;
 	private SelectionStrategy _hunting_strategy;
 
-	public Wolf(SelectionStrategy mate_strategy, SelectionStrategy hunting_strategy, Vector2D pos) {
+	public Wolf(SelectionStrategy mate_strategy, SelectionStrategy hunting_strategy, Vector2D pos)
+			throws IllegalArgumentException {
 		super("Wolf", Diet.CARNIVORE, INIT_SIGHT, INIT_SPEED, mate_strategy, pos);
-		this._hunting_strategy = hunting_strategy;
+		try {
+			this._hunting_strategy = hunting_strategy;
+			this._hunter_target = null;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Incorrect argument in Wolf", e);
+		}
 	}
 
 	protected Wolf(Wolf p1, Animal p2) {
@@ -34,36 +40,7 @@ public class Wolf extends Animal {
 		this._hunter_target = null;
 	}
 
-	@Override
-	public void update(double dt) {
-
-		if (!isDead()) {
-			switch (this._state) {
-			case NORMAL:
-				normalStateUpdate(dt);
-				break;
-			case HUNGER:
-				hungerStateUpdate(dt);
-				break;
-			case MATE:
-				mateStateUpdate(dt);
-				break;
-			default:
-				break;
-			}
-			if (this._pos.isOutOfMap(this._region_mngr)) {
-				this._pos.fixPos(this._region_mngr);
-				setStateToNormal();
-			}
-			if (this._energy == MIN_ENERGY || this._age >= MAX_AGE)
-				setStateToDead();
-			if (!isDead())
-				eat(dt);
-
-		}
-	}
-
-	private void mateStateUpdate(double dt) {
+	protected void mateStateUpdate(double dt) {
 
 		if (isInLove() && (this._mate_target.isDead() || isOutOfRange(this._mate_target)))
 			this._mate_target = null;
@@ -77,7 +54,7 @@ public class Wolf extends Animal {
 			if (this._pos.distanceTo(this._mate_target.get_position()) < REACH_DISTANCE) {
 				resetDesire();
 				this._mate_target.resetDesire();
-				if (canHaveBaby())
+				if (!is_pregnant() && canHaveBaby())
 					haveBaby();
 			}
 		}
@@ -88,7 +65,7 @@ public class Wolf extends Animal {
 
 	}
 
-	private void hungerStateUpdate(double dt) {
+	protected void hungerStateUpdate(double dt) {
 
 		if (!isInChase() || this._hunter_target.isDead() || isOutOfRange(_hunter_target))
 			lookForFood();
@@ -109,7 +86,7 @@ public class Wolf extends Animal {
 
 	}
 
-	private void normalStateUpdate(double dt) {
+	protected void normalStateUpdate(double dt) {
 
 		advance(DESIRE, ENERGY, dt);
 		if (isHungry())
@@ -176,5 +153,14 @@ public class Wolf extends Animal {
 
 		this._state = State.MATE;
 		this._hunter_target = null;
+	}
+
+	@Override
+	protected boolean toOld() {
+		return this._age >= MAX_AGE;
+	}
+
+	@Override
+	protected void dangerStateUpdate(double dt) {
 	}
 }

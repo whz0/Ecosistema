@@ -9,7 +9,7 @@ public class SelectYoungestBuilder extends Builder<SelectionStrategy> {
 
 	public SelectYoungestBuilder() {
 		super("youngest", "it's a builder for select youngest");
-		
+
 	}
 
 	@Override

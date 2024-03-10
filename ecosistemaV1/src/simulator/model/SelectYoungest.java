@@ -10,16 +10,14 @@ public class SelectYoungest implements SelectionStrategy {
 
 		if (!as.isEmpty()) {
 			Iterator<Animal> i = as.iterator();
-			double min = -1;
-			Animal a1 = null;
-
+			Animal a1 = i.next();
+			double min = a1.get_age();
 			while (i.hasNext()) {
-				Animal a2;
-				a2 = i.next();
-				if (min == -1 || a2.get_age() <= min)
+				Animal a2 = i.next();
+				if (a2.get_age() <= min && !a.equals(a2))
 					a1 = a2;
 			}
-			return a1;
+			return a.equals(a1) ? a1 : null;
 		}
 		return null;
 	}

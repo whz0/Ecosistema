@@ -66,12 +66,12 @@ public class Simulator implements JSONable {
 
 		time += dt;
 		Iterator<Animal> i = this.animales.iterator();
-		List<Animal> aux = new ArrayList<Animal>();
-		List<Animal> eliminad = new ArrayList<Animal>();
+		List<Animal> add = new ArrayList<Animal>();
+		List<Animal> delete = new ArrayList<Animal>();
 		while (i.hasNext()) {
 			Animal a = i.next();
 			if (a.isDead()) {
-				eliminad.add(a);
+				delete.add(a);
 				this.manager.unregister_animal(a);
 
 			} else {
@@ -79,14 +79,14 @@ public class Simulator implements JSONable {
 				this.manager.update_animal_region(a);
 				if (a.is_pregnant()) {
 					Animal baby = a.deliver_baby();
-					aux.add(baby);
+					add.add(baby);
 					this.manager.register_animal(baby);
 				}
 			}
 		}
 		this.manager.update_all_regions(dt);
-		this.animales.addAll(aux);
-		this.animales.removeAll(eliminad);
+		this.animales.addAll(add);
+		this.animales.removeAll(delete);
 	}
 
 	public JSONObject as_JSON() {

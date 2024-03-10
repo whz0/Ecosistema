@@ -39,22 +39,25 @@ public abstract class Animal implements Entity, AnimalInfo {
 	protected SelectionStrategy _mate_strategy;
 
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed,
-			SelectionStrategy mate_strategy, Vector2D pos) {
-
-		this._age = 0.0;
-		this._genetic_code = genetic_code;
-		this._diet = diet;
-		this._sight_range = sight_range;
-		this._pos = pos;
-		this._mate_strategy = mate_strategy;
-		this._speed = Utils.get_randomized_parameter(init_speed, SPEED);
-		this._state = State.NORMAL;
-		this._energy = ENERGY;
-		this._desire = 0.0;
-		this._dest = null;
-		this._mate_target = null;
-		this._baby = null;
-		this._region_mngr = null;
+			SelectionStrategy mate_strategy, Vector2D pos) throws IllegalArgumentException {
+		try {
+			this._age = 0.0;
+			this._genetic_code = genetic_code;
+			this._diet = diet;
+			this._sight_range = sight_range;
+			this._pos = pos;
+			this._mate_strategy = mate_strategy;
+			this._speed = Utils.get_randomized_parameter(init_speed, SPEED);
+			this._state = State.NORMAL;
+			this._energy = ENERGY;
+			this._desire = 0.0;
+			this._dest = null;
+			this._mate_target = null;
+			this._baby = null;
+			this._region_mngr = null;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Incorrect argument in Animal");
+		}
 	}
 
 	protected Animal(Animal p1, Animal p2) {
@@ -78,16 +81,16 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 		this._region_mngr = reg_mngr;
 		if (this._pos == null) {
-			this._pos = new Vector2D(Vector2D.get_random_pos(0, _region_mngr.get_width() - 1),
-					Vector2D.get_random_pos(0, _region_mngr.get_height() - 1));
+			this._pos = new Vector2D(Vector2D.get_random_pos(0, this._region_mngr.get_width() - 1),
+					Vector2D.get_random_pos(0, this._region_mngr.get_height() - 1));
 		} else
 			this._pos.fixPos(reg_mngr);
 		set_RandomDest();
 	}
 
 	protected void set_RandomDest() {
-		this._dest = new Vector2D(Vector2D.get_random_pos(0, _region_mngr.get_width() - 1),
-				Vector2D.get_random_pos(0, _region_mngr.get_height() - 1));
+		this._dest = new Vector2D(Vector2D.get_random_pos(0, this._region_mngr.get_width() - 1),
+				Vector2D.get_random_pos(0, this._region_mngr.get_height() - 1));
 	}
 
 	protected Animal deliver_baby() {
@@ -96,6 +99,48 @@ public abstract class Animal implements Entity, AnimalInfo {
 		this._baby = null;
 		return baby;
 	}
+
+	@Override
+	public void update(double dt) {
+
+		if (!isDead()) {
+			switch (this._state) {
+			case NORMAL:
+				normalStateUpdate(dt);
+				break;
+			case DANGER:
+				dangerStateUpdate(dt);
+				break;
+			case MATE:
+				mateStateUpdate(dt);
+				break;
+			case HUNGER:
+				hungerStateUpdate(dt);
+			default:
+				break;
+			}
+			if (this._pos.isOutOfMap(this._region_mngr)) {
+				this._pos.fixPos(this._region_mngr);
+				setStateToNormal();
+			}
+			if (this._energy == 0.0 || toOld()) {
+				setStateToDead();
+			}
+			if (!isDead()) {
+				eat(dt);
+			}
+		}
+	}
+
+	protected abstract boolean toOld();
+
+	protected abstract void hungerStateUpdate(double dt);
+
+	protected abstract void mateStateUpdate(double dt);
+
+	protected abstract void dangerStateUpdate(double dt);
+
+	protected abstract void normalStateUpdate(double dt);
 
 	protected void move(double speed) {
 
@@ -277,7 +322,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 	}
 
 	public boolean equals(Animal a) {
-		return this != a && this._genetic_code.equals(a._genetic_code);
+		return this != a;
 	}
 
 }

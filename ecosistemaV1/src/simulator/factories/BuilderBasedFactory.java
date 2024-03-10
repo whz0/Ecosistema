@@ -38,11 +38,8 @@ public class BuilderBasedFactory<T> implements Factory<T> {
 		}
 		if (this._builders.containsKey(info.getString("type"))) {
 			Builder<T> builder = this._builders.get(info.getString("type"));
-			if (info.has("data") && !info.isNull("data")) {
-				return builder.create_instance(info.getJSONObject("data"));
-			} else {
-				return builder.create_instance(new JSONObject());
-			}
+			return (info.has("data") && !info.isNull("data")) ? builder.create_instance(info.getJSONObject("data"))
+					: builder.create_instance(new JSONObject());
 		} else
 			throw new IllegalArgumentException("Unrecognized ‘info’:" + info.toString());
 	}

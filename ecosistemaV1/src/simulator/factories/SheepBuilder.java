@@ -19,28 +19,57 @@ public class SheepBuilder extends Builder<Animal> {
 	}
 
 	@Override
-	protected Sheep create_instance(JSONObject data) {
+	protected Sheep create_instance(JSONObject data) throws IllegalArgumentException {
 
 		SelectionStrategy mate_strategy;
 		SelectionStrategy danger_strategy;
 		Vector2D pos = null;
-
-		if (data.has("mate_strategy") && !data.isNull("mate_strategy"))
-			mate_strategy = factory_builder.create_instance(data.getJSONObject("mate_strategy"));
-		else
+		if (data.has("mate_strategy") && !data.isNull("mate_strategy")) {
+			try {
+				mate_strategy = factory_builder.create_instance(data.getJSONObject("mate_strategy"));
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Incorrect argument in SheepBuilder mate_strategy");
+			}
+		} else
 			mate_strategy = new SelectFirst();
-		if (data.has("hunt_strategy") && !data.isNull("hunt_strategy"))
-			danger_strategy = factory_builder.create_instance(data.getJSONObject("hunt_strategy"));
-		else
+		if (data.has("danger_strategy") && !data.isNull("danger_strategy")) {
+			try {
+				danger_strategy = factory_builder.create_instance(data.getJSONObject("danger_strategy"));
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Incorrect argument in SheepBuilder danger_strategy");
+			}
+		} else
 			danger_strategy = new SelectFirst();
 		if (data.has("pos") && !data.isNull("pos")) {
 			JSONArray jaX = data.getJSONObject("pos").getJSONArray("x_range");
 			JSONArray jaY = data.getJSONObject("pos").getJSONArray("y_range");
-			pos = new Vector2D(Vector2D.get_random_pos(jaX.getDouble(0), jaX.getDouble(1)),
-					Vector2D.get_random_pos(jaY.getDouble(0), jaY.getDouble(1)));
+			Double jaX1 = jaX.optDouble(0);
+			Double jaX2 = jaX.optDouble(1);
+			Double jaY1 = jaY.optDouble(0);
+			Double jaY2 = jaY.optDouble(1);
+			if (jaX1.isNaN() || jaX2.isNaN() || jaY1.isNaN() || jaX2.isNaN())
+				throw new IllegalArgumentException("Incorrect argument in SheepBuilder pos");
+			pos = new Vector2D(Vector2D.get_random_pos(jaX1, jaX2), Vector2D.get_random_pos(jaY1, jaY2));
 		}
-
 		return new Sheep(mate_strategy, danger_strategy, pos);
+	}
+
+	protected void fill_in_data(JSONObject o) {
+		JSONObject posy = new JSONObject();
+		JSONArray range = new JSONArray();
+		range.put(100.0);
+		range.put(200.0);
+		posy.put("y_range", range);
+		JSONObject posx = new JSONObject();
+		posx.put("x_range", range);
+		JSONArray pos = new JSONArray();
+		pos.put(posy);
+		pos.put(posx);
+		JSONObject strategy = new JSONObject();
+		o.put("mate_strategy", strategy);
+		o.put("danger_strategy", strategy);
+		o.put("pos", pos);
+
 	}
 
 }

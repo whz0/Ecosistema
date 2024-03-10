@@ -1,5 +1,8 @@
 package simulator.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import simulator.misc.Vector2D;
 
 public class Sheep extends Animal {
@@ -15,10 +18,15 @@ public class Sheep extends Animal {
 	private Animal _danger_source;
 	private SelectionStrategy _danger_strategy;
 
-	public Sheep(SelectionStrategy mate_strategy, SelectionStrategy danger_strategy, Vector2D pos) {
+	public Sheep(SelectionStrategy mate_strategy, SelectionStrategy danger_strategy, Vector2D pos)
+			throws IllegalArgumentException {
 		super("Sheep", Diet.HERVIBORE, INIT_SIGHT, INIT_SPEED, mate_strategy, pos);
-		this._danger_strategy = danger_strategy;
-		this._danger_source = null;
+		try {
+			this._danger_strategy = danger_strategy;
+			this._danger_source = null;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Incorrect argument in Sheep", e);
+		}
 	}
 
 	protected Sheep(Sheep p1, Animal p2) {
@@ -27,38 +35,7 @@ public class Sheep extends Animal {
 		this._danger_strategy = p1._danger_strategy;
 	}
 
-	@Override
-	public void update(double dt) {
-
-		if (!isDead()) {
-			switch (this._state) {
-			case NORMAL:
-				normalStateUpdate(dt);
-				break;
-			case DANGER:
-				dangerStateUpdate(dt);
-				break;
-			case MATE:
-				mateStateUpdate(dt);
-				break;
-			default:
-				break;
-			}
-			if (this._pos.isOutOfMap(this._region_mngr)) {
-				this._pos.fixPos(this._region_mngr);
-				setStateToNormal();
-			}
-			if (this._energy == 0.0 || this._age >= MAX_AGE) {
-				this._state = State.DEAD;
-			}
-			if (!isDead()) {
-				eat(dt);
-			}
-
-		}
-	}
-
-	private void mateStateUpdate(double dt) {
+	protected void mateStateUpdate(double dt) {
 
 		if (isInLove() && (this._mate_target.isDead() || isOutOfRange(this._mate_target)))
 			this._mate_target = null;
@@ -72,7 +49,7 @@ public class Sheep extends Animal {
 			if (this._pos.distanceTo(this._mate_target.get_position()) < REACH_DISTANCE) {
 				resetDesire();
 				this._mate_target.resetDesire();
-				if (canHaveBaby()) {
+				if (!is_pregnant() && canHaveBaby()) {
 					this._baby = new Sheep(this, this._mate_target);
 					this._mate_target = null;
 				}
@@ -87,7 +64,7 @@ public class Sheep extends Animal {
 
 	}
 
-	private void dangerStateUpdate(double dt) {
+	protected void dangerStateUpdate(double dt) {
 
 		if (isInDanger() && this._danger_source.isDead())
 			this._danger_source = null;
@@ -108,7 +85,7 @@ public class Sheep extends Animal {
 
 	}
 
-	private void normalStateUpdate(double dt) {
+	protected void normalStateUpdate(double dt) {
 
 		advance(DESIRE, ENERGY, dt);
 		if (!isInDanger())
@@ -132,7 +109,9 @@ public class Sheep extends Animal {
 
 	private void lookForDanger() {
 
-		this._region_mngr.get_animals_in_range(this, (a) -> a.get_diet().equals(Diet.CARNIVORE));
+		List<Animal> list = new ArrayList<Animal>();
+		list = this._region_mngr.get_animals_in_range(this, (a) -> a.get_diet().equals(Diet.CARNIVORE));
+		this._danger_source = this._danger_strategy.select(this, list);
 	}
 
 	@Override
@@ -153,4 +132,12 @@ public class Sheep extends Animal {
 		this._mate_target = null;
 	}
 
+	@Override
+	protected boolean toOld() {
+		return this._age >= MAX_AGE;
+	}
+
+	@Override
+	protected void hungerStateUpdate(double dt) {
+	}
 }

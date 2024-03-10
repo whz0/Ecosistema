@@ -36,14 +36,14 @@ public class Controler {
 				int colIni = col.getInt(0);
 				int colEnd = col.getInt(1);
 				JSONObject region = jo.getJSONObject("spec");
-				for (int j = rowIni; j < rowEnd; j++) {
-					for (int k = colIni; k < colEnd; k++) {
+				for (int j = rowIni; j <= rowEnd; j++) {
+					for (int k = colIni; k <= colEnd; k++) {
 						this._sim.set_region(j, k, region);
 					}
 				}
 			}
 		}
-		
+
 		JSONArray animales = data.getJSONArray("animals");
 		int n = animales.length();
 		for (int i = 0; i < n; i++) {

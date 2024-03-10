@@ -92,7 +92,7 @@ public class Main {
 			parse_in_file_option(line);
 			parse_time_option(line);
 			parse_out_file_option(line);
-			parse_viewer_option();
+			parse_viewer_option(line);
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
 			//
@@ -156,8 +156,10 @@ public class Main {
 		}
 	}
 
-	private static void parse_viewer_option() {
-		_viewer = true;
+	private static void parse_viewer_option(CommandLine line) {
+
+		if (line.hasOption("sv"))
+			_viewer = true;
 	}
 
 	private static void parse_help_option(CommandLine line, Options cmdLineOptions) {
