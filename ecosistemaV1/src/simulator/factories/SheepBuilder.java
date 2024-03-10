@@ -15,6 +15,8 @@ public class SheepBuilder extends Builder<Animal> {
 
 	public SheepBuilder(Factory<SelectionStrategy> _selection) {
 		super("sheep", "it's a builder for sheep");
+		if (_selection == null)
+			throw new IllegalArgumentException("Invalid factory_builder");
 		this.factory_builder = _selection;
 	}
 
