@@ -1,11 +1,12 @@
 package simulator.view;
 
 import java.util.List;
+import java.util.ArrayList;
+
 
 import javax.swing.table.AbstractTableModel;
 
 import simulator.control.Controller;
-import simulator.launcher.Main;
 import simulator.model.AnimalInfo;
 import simulator.model.EcoSysObserver;
 import simulator.model.MapInfo;
@@ -14,10 +15,12 @@ import simulator.model.RegionInfo;
 class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	
 	private Controller _ctrl;
-	// TODO definir atributos necesarios
+	private List<RegionInfo> _regions;
+	
 	RegionsTableModel(Controller ctrl) {
 	// TODO inicializar estructuras de datos correspondientes
 	// TODO registrar this como observador
+		this._regions = new ArrayList<>();
 		this._ctrl = ctrl;
 		this._ctrl.addObserver(this);
 	}

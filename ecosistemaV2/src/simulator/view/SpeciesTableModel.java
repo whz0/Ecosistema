@@ -1,10 +1,13 @@
 package simulator.view;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
 import simulator.control.Controller;
+import simulator.model.Animal;
 import simulator.model.AnimalInfo;
 import simulator.model.EcoSysObserver;
 import simulator.model.MapInfo;
@@ -13,62 +16,97 @@ import simulator.model.RegionInfo;
 class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 	
 	private Controller _ctrl;
-	private List<AnimalInfo> _animals;
+	private List<Map<String, List<Integer>>> _animals;
+	private String[] _colNames;
 	
 	SpeciesTableModel(Controller ctrl) {
 		this._ctrl = ctrl;
-		this._animals = this._ctrl.
+		this._animals = new ArrayList<>();
+		int i = 0;
+		this._colNames[i++] = "Species";
+		for(Animal.State s: Animal.State.values()) {
+			this._colNames[i++] = s.toString();
+		}
 	// TODO inicializar estructuras de datos correspondientes
 	// TODO registrar this como observador
 		this._ctrl.addObserver(this);
 	}
-	// TODO el resto de métodos van aquí …
 
 	@Override
+	public boolean isCellEditable(int row, int column) {
+		return false;
+	}
+	
+	@Override
 	public int getRowCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return this._animals.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return this._colNames.length;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Object s  = null;
+		
+		switch(columnIndex) {
+		case 0: this._animals.get(rowIndex);
+		break;
+		case 1: s = num.get(columnIndex);
+		}
+		
+		return s;
+	}
+	
+	@Override
+	public String getColumnName(int col) {
+		return _colNames[col];
 	}
 
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
-		// TODO Auto-generated method stub
 		
+		for(AnimalInfo a: animals) {
+			Map<AnimalInfo,String> type = new HashMap<>();
+			type.put(a, a.get_genetic_code());
+			this._animals.put(type, a.get_state());
+		}
+		fireTableDataChanged();
 	}
 
 	@Override
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
-		// TODO Auto-generated method stub
 		
+		this._animals.clear();
+		for(AnimalInfo a: animals) {
+			Map<AnimalInfo,String> type = new HashMap<>();
+			type.put(a, a.get_genetic_code());
+			this._animals.put(type, a.get_state());
+		}
+		fireTableDataChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		// TODO Auto-generated method stub
 		
+		this._animals = animals;
+		for(Animal.State s: this._colNames) {
+			if(s.equals(a.get_state()));
+		}
+		fireTableDataChanged();
 	}
 
 	@Override
 	public void onRegionSet(int row, int col, MapInfo map, RegionInfo r) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
-		// TODO Auto-generated method stub
-		
 	}
+	
 	}

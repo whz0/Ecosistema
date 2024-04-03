@@ -9,9 +9,12 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
 import simulator.control.Controller;
@@ -34,7 +37,8 @@ class ControlPanel extends JPanel {
 	private JButton _regionsButton;
 	private JButton _viewerButton;
 	private JButton _stopButton;
-	private JTextField _text_field;
+	private JTextField _delta_time_text;
+	private JSpinner _step_spinner;
 
 // TODO añade más atributos aquí …
 	ControlPanel(Controller ctrl) {
@@ -62,7 +66,7 @@ class ControlPanel extends JPanel {
 				JSONObject jo;
 				try {
 					jo = new JSONObject(new JSONTokener(new FileReader(file)));
-					this._ctrl.reset(10, 10, 10, 01);
+					this._ctrl.reset(jo.getInt("cols"), jo.getInt("rows"), jo.getInt("width"), jo.getInt("height"));
 					this._ctrl.load_data(jo);
 				} catch (JSONException e1) {
 					ViewUtils.showErrorMsg(e1.getMessage());
@@ -78,7 +82,7 @@ class ControlPanel extends JPanel {
 		_viewerButton = new JButton();
 		_viewerButton.setToolTipText("Viewer");
 		_viewerButton.setIcon(new ImageIcon("resources/icon/viewer.png"));
-		_viewerButton.addActionListener((e) -> this._viewer = new MapWindow(null, _ctrl));
+		_viewerButton.addActionListener((e) -> this._viewer = new MapWindow(new JFrame(), this._ctrl));
 		_toolaBar.add(_viewerButton);
 
 		_toolaBar.addSeparator();
@@ -93,8 +97,9 @@ class ControlPanel extends JPanel {
 		_runButton.setToolTipText("Run");
 		_runButton.setIcon(new ImageIcon("resoucers/icon/run.png"));
 		_runButton.addActionListener((e) -> {
+			enable_buttons();
 			this._stopped = false;
-			run_sim(10, 10);
+			run_sim((Integer) this._step_spinner.getValue(), Double.valueOf(this._delta_time_text.getText()));
 		});
 		_toolaBar.add(_runButton);
 
@@ -115,14 +120,15 @@ class ControlPanel extends JPanel {
 
 // TODO Inicializar _fc con una instancia de JFileChooser. Para que siempre
 // abre en la carpeta de ejemplos puedes usar:
-//
+
 // _fc.setCurrentDirectory(new File(System.getProperty("user.dir") + "/resources/examples"));
-// TODO Inicializar _changeRegionsDialog con instancias del diálogo de cambio
-// de regiones
+// TODO Inicializar _changeRegionsDialog con instancias del diálogo de cambio de regiones
 		this._fc = new JFileChooser();
 		this._fc.setCurrentDirectory(new File(System.getProperty("user.dir") + "/resources/examples"));
 
-		this._changeRegionsDialog = ChangeRegionsDialog(this._ctrl);
+		this._step_spinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 10));
+
+		this._changeRegionsDialog = new ChangeRegionsDialog(this._ctrl);
 	}
 
 	// TODO el resto de métodos van aquí…

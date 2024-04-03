@@ -18,12 +18,15 @@ import simulator.model.RegionInfo;
 class StatusBar extends JPanel implements EcoSysObserver {
 
 	private Controller _ctrl;
+	private int _time;
+	private int _num_animales;
+	private Dimension _dimension;
 
 	// TODO Añadir los atributos necesarios.
 	StatusBar(Controller ctrl) {
 		initGUI();
 		this._ctrl = ctrl;
-		// TODO registrar this como observador
+		this._num_animales = 0;
 		this._ctrl.addObserver(this);
 	}
 
@@ -42,8 +45,8 @@ class StatusBar extends JPanel implements EcoSysObserver {
 		this.add(s);
 		JLabel time_label = new JLabel("time");
 		JLabel num_animal_label = new JLabel("num_animals");
-		JLabel dimention_label = new JLabel("dimetion");
-		this.add(dimention_label);
+		JLabel dimension_label = new JLabel("dimesion");
+		this.add(dimension_label);
 		this.add(num_animal_label);
 		this.add(time_label);
 	}
@@ -63,8 +66,7 @@ class StatusBar extends JPanel implements EcoSysObserver {
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
