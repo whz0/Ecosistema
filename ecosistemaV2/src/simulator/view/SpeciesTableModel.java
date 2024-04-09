@@ -3,6 +3,7 @@ package simulator.view;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -14,21 +15,14 @@ import simulator.model.MapInfo;
 import simulator.model.RegionInfo;
 
 class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
-	
+
 	private Controller _ctrl;
-	private List<Map<String, List<Integer>>> _animals;
-	private String[] _colNames;
-	
+	private Map<String, Map<Animal.State, Integer>> _animals;
+	private String[] _colNames = { "Species", Animal.State.values().toString() };
+
 	SpeciesTableModel(Controller ctrl) {
 		this._ctrl = ctrl;
-		this._animals = new ArrayList<>();
-		int i = 0;
-		this._colNames[i++] = "Species";
-		for(Animal.State s: Animal.State.values()) {
-			this._colNames[i++] = s.toString();
-		}
-	// TODO inicializar estructuras de datos correspondientes
-	// TODO registrar this como observador
+		this._animals = new HashMap<>();
 		this._ctrl.addObserver(this);
 	}
 
@@ -36,33 +30,38 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 	public boolean isCellEditable(int row, int column) {
 		return false;
 	}
-	
+
 	@Override
 	public int getRowCount() {
-		
+
 		return this._animals.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		
+
 		return this._colNames.length;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		
-		Object s  = null;
-		
-		switch(columnIndex) {
-		case 0: this._animals.get(rowIndex);
-		break;
-		case 1: s = num.get(columnIndex);
+
+		Object s = null;
+		List<String> keys = new ArrayList<>(this._animals.keySet());
+		String type = keys.get(rowIndex);
+
+		switch (columnIndex) {
+		case 0:
+			s = type;
+			break;
+		default:
+			Animal.State state = Animal.State.valueOf(this._colNames[columnIndex]);
+			s = this._animals.get(type).get(state);
 		}
-		
+
 		return s;
 	}
-	
+
 	@Override
 	public String getColumnName(int col) {
 		return _colNames[col];
@@ -70,34 +69,24 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
-		
-		for(AnimalInfo a: animals) {
-			Map<AnimalInfo,String> type = new HashMap<>();
-			type.put(a, a.get_genetic_code());
-			this._animals.put(type, a.get_state());
+
+		for (AnimalInfo a : animals) {
+			update(a);
 		}
 		fireTableDataChanged();
 	}
 
 	@Override
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
-		
+
 		this._animals.clear();
-		for(AnimalInfo a: animals) {
-			Map<AnimalInfo,String> type = new HashMap<>();
-			type.put(a, a.get_genetic_code());
-			this._animals.put(type, a.get_state());
-		}
 		fireTableDataChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		
-		this._animals = animals;
-		for(Animal.State s: this._colNames) {
-			if(s.equals(a.get_state()));
-		}
+
+		update(a);
 		fireTableDataChanged();
 	}
 
@@ -107,6 +96,30 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
+
+		for (AnimalInfo a : animals) {
+			update(a);
+		}
+		fireTableDataChanged();
 	}
-	
+
+	private void update(AnimalInfo a) {
+
+		Map<Animal.State, Integer> state = new HashMap<>();
+		if (this._animals.containsKey(a.get_genetic_code())) {
+			state = this._animals.get(a.get_genetic_code());
+			if (state.containsKey(a.get_state())) {
+				int n = state.get(a.get_state());
+				state.replace(a.get_state(), ++n);
+			} else {
+				state.put(a.get_state(), 1);
+			}
+			this._animals.replace(a.get_genetic_code(), state);
+		} else {
+			state.put(a.get_state(), 1);
+			this._animals.put(a.get_genetic_code(), state);
+		}
+
 	}
+
+}

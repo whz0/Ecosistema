@@ -26,7 +26,7 @@ class MapWindow extends JFrame implements EcoSysObserver {
 		_ctrl = ctrl;
 		_parent = parent;
 		intiGUI();
-// TODO registrar this como observador
+		this._ctrl.addObserver(this);
 	}
 
 	private void intiGUI() {

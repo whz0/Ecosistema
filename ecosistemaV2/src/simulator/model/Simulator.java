@@ -22,10 +22,10 @@ public class Simulator implements JSONable, Observable<EcoSysObserver> {
 			Factory<Region> regions_factory) {
 		if (animals_factory == null || regions_factory == null)
 			throw new IllegalArgumentException("Invalid animals_factory/regions_factory");
-		reset(cols, rows, width, height);
 		this._animal_factory = animals_factory;
 		this._regions_factory = regions_factory;
 		this._observers = new ArrayList<EcoSysObserver>();
+		reset(cols, rows, width, height);
 	}
 
 	public void addObserver(EcoSysObserver o) {

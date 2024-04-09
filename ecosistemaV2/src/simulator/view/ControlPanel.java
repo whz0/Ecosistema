@@ -1,6 +1,7 @@
 package simulator.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -12,12 +13,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
 import simulator.control.Controller;
+import simulator.launcher.Main;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,12 +55,10 @@ class ControlPanel extends JPanel {
 		add(_toolaBar, BorderLayout.PAGE_START);
 // TODO crear los diferentes botones/atributos y añadirlos a _toolaBar.
 // Todos ellos han de tener su correspondiente tooltip. Puedes utilizar
-// _toolaBar.addSeparator() para añadir la línea de separación vertical
-// entre las componentes que lo necesiten.
-// Quit Button
+
 		_openButton = new JButton();
 		_openButton.setToolTipText("Open");
-		_openButton.setIcon(new ImageIcon("resources/icon/open.png"));
+		_openButton.setIcon(new ImageIcon("resources/icons/open.png"));
 		_openButton.addActionListener((e) -> {
 			int v = _fc.showOpenDialog(ViewUtils.getWindow(this));
 			if (v == JFileChooser.APPROVE_OPTION) {
@@ -81,21 +82,20 @@ class ControlPanel extends JPanel {
 		_toolaBar.addSeparator();
 		_viewerButton = new JButton();
 		_viewerButton.setToolTipText("Viewer");
-		_viewerButton.setIcon(new ImageIcon("resources/icon/viewer.png"));
+		_viewerButton.setIcon(new ImageIcon("resources/icons/viewer.png"));
 		_viewerButton.addActionListener((e) -> this._viewer = new MapWindow(new JFrame(), this._ctrl));
 		_toolaBar.add(_viewerButton);
 
-		_toolaBar.addSeparator();
 		_regionsButton = new JButton();
 		_regionsButton.setToolTipText("Regions");
-		_regionsButton.setIcon(new ImageIcon("resources/icon/regions.png"));
+		_regionsButton.setIcon(new ImageIcon("resources/icons/regions.png"));
 		_regionsButton.addActionListener((e) -> _changeRegionsDialog.open(ViewUtils.getWindow(this)));
 		_toolaBar.add(_regionsButton);
 
 		_toolaBar.addSeparator();
 		_runButton = new JButton();
 		_runButton.setToolTipText("Run");
-		_runButton.setIcon(new ImageIcon("resoucers/icon/run.png"));
+		_runButton.setIcon(new ImageIcon("resources/icons/run.png"));
 		_runButton.addActionListener((e) -> {
 			enable_buttons();
 			this._stopped = false;
@@ -103,12 +103,26 @@ class ControlPanel extends JPanel {
 		});
 		_toolaBar.add(_runButton);
 
-		_toolaBar.addSeparator();
 		_stopButton = new JButton();
 		_stopButton.setToolTipText("Stop");
-		_stopButton.setIcon(new ImageIcon("resources/icon/stop.png"));
+		_stopButton.setIcon(new ImageIcon("resources/icons/stop.png"));
 		_stopButton.addActionListener((e) -> this._stopped = true);
 		_toolaBar.add(_stopButton);
+
+		JLabel steps = new JLabel(" Steps: ");
+		steps.setVisible(true);
+		_toolaBar.add(steps);
+		this._step_spinner = new JSpinner(new SpinnerNumberModel(10.0, 1.0, 100.0, 10));
+		this._step_spinner.setPreferredSize(new Dimension(80, 40));
+		this._toolaBar.add(_step_spinner);
+
+		JLabel delta_time = new JLabel(" Delta-time: ");
+		delta_time.setVisible(true);
+		this._toolaBar.add(delta_time);
+		this._delta_time_text = new JTextField();
+		this._delta_time_text.setText("" + Main._default_delta_time);
+		this._delta_time_text.setPreferredSize(new Dimension(100, 40));
+		this._toolaBar.add(this._delta_time_text);
 
 		_toolaBar.add(Box.createGlue()); // this aligns the button to the right
 		_toolaBar.addSeparator();
@@ -118,15 +132,9 @@ class ControlPanel extends JPanel {
 		_quitButton.addActionListener((e) -> ViewUtils.quit(this));
 		_toolaBar.add(_quitButton);
 
-// TODO Inicializar _fc con una instancia de JFileChooser. Para que siempre
-// abre en la carpeta de ejemplos puedes usar:
-
-// _fc.setCurrentDirectory(new File(System.getProperty("user.dir") + "/resources/examples"));
 // TODO Inicializar _changeRegionsDialog con instancias del diálogo de cambio de regiones
 		this._fc = new JFileChooser();
 		this._fc.setCurrentDirectory(new File(System.getProperty("user.dir") + "/resources/examples"));
-
-		this._step_spinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 10));
 
 		this._changeRegionsDialog = new ChangeRegionsDialog(this._ctrl);
 	}

@@ -273,9 +273,9 @@ public class Main {
 						_animals_factory, _regions_factory);
 				_controler = new Controller(_simulator);
 				_controler.load_data(j);
-				_controler.run(_time, _delta_time, _viewer, _out);
 			}
 		SwingUtilities.invokeAndWait(() -> new MainWindow(_controler));
+		
 	}
 
 	private static void start(String[] args) throws Exception {
