@@ -202,19 +202,21 @@ public class RegionManager implements AnimalMapView {
 			@Override
 			public boolean hasNext() {
 
-				return this.i < RegionManager.this._rows && this.j < RegionManager.this._cols;
+				return this.i < RegionManager.this._rows - 1 || (this.i==RegionManager.this._rows-1 && this.j < RegionManager.this._cols);
 			}
 
 			@Override
 			public RegionData next() {
-				if (this.j == RegionManager.this._cols) {
+
+				RegionData region = new RegionData(i, j, RegionManager.this._region[i][j]);
+				if (this.j == RegionManager.this._cols - 1) {
 					i++;
 					j = 0;
 				} else
 					j++;
-				if (RegionManager.this._region[i][j] == null)
+				if (region == null)
 					return next();
-				return new RegionData(i, j, RegionManager.this._region[i][j]);
+				return region;
 			}
 
 			public void remove() {

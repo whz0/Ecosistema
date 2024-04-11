@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Comparator;
 import javax.swing.table.AbstractTableModel;
 
@@ -20,10 +21,17 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 
 	private Controller _ctrl;
 	private Map<MapInfo.RegionData, Map<Animal.Diet, Integer>> _regions;
-	private String[] _colNames = { "Row", "Col", "Desc.", Animal.Diet.values().toString() };
+	private List<String> _colNames;
 
 	RegionsTableModel(Controller ctrl) {
-		
+
+		this._colNames = new ArrayList<>();
+		this._colNames.add("Row");
+		this._colNames.add("Col");
+		this._colNames.add("Desc.");
+		for (int i = 0; i < Animal.Diet.values().length; i++) {
+			this._colNames.add(Animal.Diet.values()[i].toString());
+		}
 		this._regions = new TreeMap<>(new Comparator<>() {
 			@Override
 			public int compare(RegionData o1, RegionData o2) {
@@ -49,12 +57,12 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	@Override
 	public int getColumnCount() {
 
-		return this._colNames.length;
+		return this._colNames.size();
 	}
 
 	@Override
 	public String getColumnName(int col) {
-		return _colNames[col];
+		return _colNames.get(col);
 	}
 
 	@Override
@@ -72,13 +80,12 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 			s = r.col();
 			break;
 		case 2:
-			s = r.toString();
+			s = r.r().toString();
 			break;
 		default: {
-			Animal.Diet a = Animal.Diet.valueOf(this._colNames[columnIndex]);
+			Animal.Diet a = Animal.Diet.valueOf(this._colNames.get(columnIndex));
 			s = this._regions.get(r).get(a);
 		}
-
 		}
 
 		return s;
@@ -87,45 +94,51 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
 
+		Iterator<RegionData> i = map.iterator();
+		while (i.hasNext()) {
+			RegionData r = i.next();
+			update(r);
+		}
+		fireTableDataChanged();
 	}
 
 	@Override
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
-		// TODO Auto-generated method stub
-
+		this._regions.clear();
+		fireTableDataChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onRegionSet(int row, int col, MapInfo map, RegionInfo r) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
-		// TODO Auto-generated method stub
-
+		Iterator<RegionData> i = map.iterator();
+		while (i.hasNext()) {
+			RegionData r = i.next();
+			update(r);
+		}
+		fireTableDataChanged();
 	}
 
-	private void update(MapInfo map) {
+	private void update(RegionData r) {
 
-		map.forEach((r) -> {
-			List<AnimalInfo> animal = new ArrayList<>(r.r().getAnimalsInfo());
-			Map<Animal.Diet, Integer> animals = new HashMap<>();
-			for (AnimalInfo a : animal) {
-				if (animals.containsKey(a.get_diet())) {
-					int num = animals.get(a.get_diet());
-					animals.replace(a.get_diet(), num, ++num);
-				} else
-					animals.put(a.get_diet(), 1);
-			}
-			this._regions.put(r, animals);
-		});
+		if (this._regions.containsKey(r))
+			this._regions.get(r).clear();
+		Map<Animal.Diet, Integer> diets = new HashMap<>();
+		for (Animal.Diet d : Animal.Diet.values())
+			diets.put(d, 0);
+
+		for (AnimalInfo a : r.r().getAnimalsInfo()) {
+			int num = diets.get(a.get_diet());
+			diets.replace(a.get_diet(), ++num);
+		}
+
+		this._regions.put(r, diets);
 	}
 }

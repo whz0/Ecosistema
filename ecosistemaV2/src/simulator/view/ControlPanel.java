@@ -43,7 +43,6 @@ class ControlPanel extends JPanel {
 	private JTextField _delta_time_text;
 	private JSpinner _step_spinner;
 
-// TODO añade más atributos aquí …
 	ControlPanel(Controller ctrl) {
 		_ctrl = ctrl;
 		initGUI();
@@ -53,8 +52,6 @@ class ControlPanel extends JPanel {
 		setLayout(new BorderLayout());
 		_toolaBar = new JToolBar();
 		add(_toolaBar, BorderLayout.PAGE_START);
-// TODO crear los diferentes botones/atributos y añadirlos a _toolaBar.
-// Todos ellos han de tener su correspondiente tooltip. Puedes utilizar
 
 		_openButton = new JButton();
 		_openButton.setToolTipText("Open");
@@ -83,7 +80,7 @@ class ControlPanel extends JPanel {
 		_viewerButton = new JButton();
 		_viewerButton.setToolTipText("Viewer");
 		_viewerButton.setIcon(new ImageIcon("resources/icons/viewer.png"));
-		_viewerButton.addActionListener((e) -> this._viewer = new MapWindow(new JFrame(), this._ctrl));
+		_viewerButton.addActionListener((e) -> this._viewer = new MapWindow(null, this._ctrl));
 		_toolaBar.add(_viewerButton);
 
 		_regionsButton = new JButton();
@@ -97,9 +94,9 @@ class ControlPanel extends JPanel {
 		_runButton.setToolTipText("Run");
 		_runButton.setIcon(new ImageIcon("resources/icons/run.png"));
 		_runButton.addActionListener((e) -> {
-			enable_buttons();
 			this._stopped = false;
-			run_sim((Integer) this._step_spinner.getValue(), Double.valueOf(this._delta_time_text.getText()));
+			enable_buttons();
+			run_sim((int) this._step_spinner.getValue(), Double.valueOf(this._delta_time_text.getText()));
 		});
 		_toolaBar.add(_runButton);
 
@@ -112,7 +109,7 @@ class ControlPanel extends JPanel {
 		JLabel steps = new JLabel(" Steps: ");
 		steps.setVisible(true);
 		_toolaBar.add(steps);
-		this._step_spinner = new JSpinner(new SpinnerNumberModel(10.0, 1.0, 100.0, 10));
+		this._step_spinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 10));
 		this._step_spinner.setPreferredSize(new Dimension(80, 40));
 		this._toolaBar.add(_step_spinner);
 
@@ -132,37 +129,34 @@ class ControlPanel extends JPanel {
 		_quitButton.addActionListener((e) -> ViewUtils.quit(this));
 		_toolaBar.add(_quitButton);
 
-// TODO Inicializar _changeRegionsDialog con instancias del diálogo de cambio de regiones
 		this._fc = new JFileChooser();
 		this._fc.setCurrentDirectory(new File(System.getProperty("user.dir") + "/resources/examples"));
 
 		this._changeRegionsDialog = new ChangeRegionsDialog(this._ctrl);
 	}
 
-	// TODO el resto de métodos van aquí…
 	private void run_sim(int n, double dt) {
 		if (n > 0 && !_stopped) {
 			try {
-				for (int i = 0; i < n; i++)
-					_ctrl.advance(dt);
+				_ctrl.advance(dt);
 				SwingUtilities.invokeLater(() -> run_sim(n - 1, dt));
 			} catch (Exception e) {
 				ViewUtils.showErrorMsg(e.getMessage());
-				enable_buttons();
 				_stopped = true;
+				enable_buttons();
 			}
 		} else {
-			enable_buttons();
 			_stopped = true;
+			enable_buttons();
 		}
 	}
 
 	private void enable_buttons() {
-		this._quitButton.setEnabled(!_stopped);
-		this._runButton.setEnabled(!_stopped);
-		this._openButton.setEnabled(!_stopped);
-		this._viewerButton.setEnabled(!_stopped);
-		this._regionsButton.setEnabled(!_stopped);
+		this._quitButton.setEnabled(_stopped);
+		this._runButton.setEnabled(_stopped);
+		this._openButton.setEnabled(_stopped);
+		this._viewerButton.setEnabled(_stopped);
+		this._regionsButton.setEnabled(_stopped);
 	}
 
 }

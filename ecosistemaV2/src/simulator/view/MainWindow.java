@@ -30,21 +30,19 @@ public class MainWindow extends JFrame {
 
 		StatusBar status_bar = new StatusBar(_ctrl);
 		mainPanel.add(status_bar, BorderLayout.PAGE_END);
-		
+
 		JPanel contentPanel = new JPanel();
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		mainPanel.add(contentPanel, BorderLayout.CENTER);
 
 		InfoTable species_table = new InfoTable("Species", new SpeciesTableModel(_ctrl));
 		species_table.setPreferredSize(new Dimension(500, 250));
-		species_table.setVisible(true);
 		contentPanel.add(species_table);
 
 		InfoTable regions_table = new InfoTable("Regions", new RegionsTableModel(_ctrl));
 		regions_table.setPreferredSize(new Dimension(500, 250));
-		regions_table.setVisible(true);
 		contentPanel.add(regions_table);
-		
+
 		addWindowListener(new WindowListener() {
 
 			@Override

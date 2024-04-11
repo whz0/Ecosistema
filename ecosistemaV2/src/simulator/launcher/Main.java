@@ -71,7 +71,7 @@ public class Main {
 	private static String _out_file = null;
 	public static Double _delta_time = null;
 	private static boolean _viewer = false;
-	private static ExecMode _mode;
+	private static ExecMode _mode = ExecMode.GUI;
 	public static Factory<SelectionStrategy> _selections_factory;
 	public static Factory<Region> _regions_factory;
 	public static Factory<Animal> _animals_factory;

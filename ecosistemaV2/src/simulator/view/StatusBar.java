@@ -18,63 +18,49 @@ import simulator.model.RegionInfo;
 class StatusBar extends JPanel implements EcoSysObserver {
 
 	private Controller _ctrl;
-	private double _time;
-	private int _num_animales;
-	private int[] _dimension = { 0, 0, 0, 0 };
+	private JLabel _time_label;
+	private JLabel _num_animals_label;
+	private JLabel _dimension_label;
 
 	// TODO Añadir los atributos necesarios.
 	StatusBar(Controller ctrl) {
 		this._ctrl = ctrl;
-		this._num_animales = 0;
-		this._time = 0.0;
-		initGUI();
+		this._num_animals_label = new JLabel("Total Animals: ");
+		this._time_label = new JLabel("Time: ");
+		this._dimension_label = new JLabel("Dimension: ");
 		this._ctrl.addObserver(this);
+		initGUI();
 	}
 
 	private void initGUI() {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.setBorder(BorderFactory.createBevelBorder(1));
-		// TODO Crear varios JLabel para el tiempo, el número de animales, y la
-		// dimensión y añadirlos al panel. Puedes utilizar el siguiente código
-		// para añadir un separador vertical:
-		//
-		// JSeparator s = new JSeparator(JSeparator.VERTICAL);
-		// s.setPreferredSize(new Dimension(10, 20));
-		// this.add(s);
-		JLabel time_label = new JLabel("Time: " + this._time);
-		JLabel num_animal_label = new JLabel("Total Animals: " + this._num_animales);
-		JLabel dimension_label = new JLabel("Dimesion: " + this._dimension[0] + "x" + this._dimension[1] + " "
-				+ this._dimension[2] + "x" + this._dimension[3]);
-		this.add(time_label);
+
+		this.add(_time_label);
 		JSeparator s1 = new JSeparator(JSeparator.VERTICAL);
 		s1.setPreferredSize(new Dimension(10, 20));
 		this.add(s1);
-		this.add(num_animal_label);
+		this.add(_num_animals_label);
 		JSeparator s2 = new JSeparator(JSeparator.VERTICAL);
 		s2.setPreferredSize(new Dimension(10, 20));
 		this.add(s2);
-		this.add(dimension_label);
+		this.add(_dimension_label);
 
 	}
-	// TODO el resto de métodos van aquí…
 
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
-		this._time = time;
-		this._num_animales = animals.size();
-		this._dimension = new int[] { map.get_width(), map.get_height(), map.get_rows(), map.get_cols() };
+		update(time, map, animals);
 	}
 
 	@Override
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
-		this._num_animales = 0;
-		this._time = 0.0;
-		this._dimension = new int[] { 0, 0, 0, 0 };
+		update(time, map, animals);
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		this._num_animales++;
+		update(time, map, animals);
 	}
 
 	@Override
@@ -83,5 +69,13 @@ class StatusBar extends JPanel implements EcoSysObserver {
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
+		update(time, map, animals);
+	}
+
+	private void update(double time, MapInfo map, List<AnimalInfo> animals) {
+		this._time_label.setText("Time: " + String.format("%.3f", time));
+		this._num_animals_label.setText("Total Animals: " + animals.size());
+		this._dimension_label.setText(
+				"Dimension: " + map.get_height() + "x" + map.get_width() + " " + map.get_rows() + "x" + map.get_cols());
 	}
 }

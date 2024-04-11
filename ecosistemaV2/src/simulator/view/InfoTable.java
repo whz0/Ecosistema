@@ -20,14 +20,13 @@ public class InfoTable extends JPanel {
 	}
 
 	private void initGUI() {
-// TODO cambiar el layout del panel a BorderLayout()
-// TODO añadir un borde con título al JPanel, con el texto _title
-// TODO añadir un JTable (con barra de desplazamiento vertical) que use
-// _tableModel
+
 		this.setLayout(new BorderLayout());
 		this.setBorder(new TitledBorder(_title));
 		JTable table = new JTable(this._tableModel);
 		JScrollPane scroll = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.add(scroll);
+		this.setVisible(true);
 	}
 }
