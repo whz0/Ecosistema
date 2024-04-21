@@ -18,6 +18,7 @@ import simulator.model.RegionInfo;
 
 class MapWindow extends JFrame implements EcoSysObserver {
 
+	private static final long serialVersionUID = 1L;
 	private Controller _ctrl;
 	private AbstractMapViewer _viewer;
 	private Frame _parent;

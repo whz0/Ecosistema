@@ -38,7 +38,7 @@ public class Simulator implements JSONable, Observable<EcoSysObserver> {
 	}
 
 	private void set_region(int row, int col, Region r) {
-
+		
 		this._region_mngr.set_region(row, col, r);
 		notify_on_set_region(row, col, r);
 	}
@@ -124,8 +124,8 @@ public class Simulator implements JSONable, Observable<EcoSysObserver> {
 	}
 
 	public void reset(int cols, int rows, int width, int height) {
-		this._animals = new ArrayList<Animal>();
 		this._region_mngr = new RegionManager(cols, rows, width, height);
+		this._animals = new ArrayList<Animal>();
 		this._time = 0.0;
 		notify_on_reset();
 	}
@@ -147,7 +147,7 @@ public class Simulator implements JSONable, Observable<EcoSysObserver> {
 	private void notify_on_add_observer(EcoSysObserver o) {
 		List<AnimalInfo> animals = new ArrayList<>(_animals);
 		o.onRegister(_time, _region_mngr, animals);
-	}
+	} 
 
 	private void notify_on_advanced(double dt) {
 		List<AnimalInfo> animals = new ArrayList<>(_animals);

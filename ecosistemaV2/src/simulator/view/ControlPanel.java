@@ -10,7 +10,6 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JLabel;
@@ -28,11 +27,11 @@ import org.json.JSONTokener;
 
 class ControlPanel extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private Controller _ctrl;
 	private ChangeRegionsDialog _changeRegionsDialog;
 	private JToolBar _toolaBar;
 	private JFileChooser _fc;
-	private MapWindow _viewer;
 	private boolean _stopped = true; // utilizado en los botones de run/stop
 	private JButton _quitButton;
 	private JButton _openButton;
@@ -80,7 +79,7 @@ class ControlPanel extends JPanel {
 		_viewerButton = new JButton();
 		_viewerButton.setToolTipText("Viewer");
 		_viewerButton.setIcon(new ImageIcon("resources/icons/viewer.png"));
-		_viewerButton.addActionListener((e) -> this._viewer = new MapWindow(null, this._ctrl));
+		_viewerButton.addActionListener((e) -> new MapWindow(null, this._ctrl));
 		_toolaBar.add(_viewerButton);
 
 		_regionsButton = new JButton();
@@ -109,7 +108,7 @@ class ControlPanel extends JPanel {
 		JLabel steps = new JLabel(" Steps: ");
 		steps.setVisible(true);
 		_toolaBar.add(steps);
-		this._step_spinner = new JSpinner(new SpinnerNumberModel(10, 1, 100, 10));
+		this._step_spinner = new JSpinner(new SpinnerNumberModel(10, 1, 10000, 10));
 		this._step_spinner.setPreferredSize(new Dimension(80, 40));
 		this._toolaBar.add(_step_spinner);
 

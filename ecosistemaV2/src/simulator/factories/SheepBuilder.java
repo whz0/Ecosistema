@@ -34,6 +34,7 @@ public class SheepBuilder extends Builder<Animal> {
 			}
 		} else
 			mate_strategy = new SelectFirst();
+		
 		if (data.has("danger_strategy") && !data.isNull("danger_strategy")) {
 			try {
 				danger_strategy = factory_builder.create_instance(data.getJSONObject("danger_strategy"));
@@ -42,6 +43,7 @@ public class SheepBuilder extends Builder<Animal> {
 			}
 		} else
 			danger_strategy = new SelectFirst();
+		
 		if (data.has("pos") && !data.isNull("pos")) {
 			JSONArray jaX = data.getJSONObject("pos").getJSONArray("x_range");
 			JSONArray jaY = data.getJSONObject("pos").getJSONArray("y_range");

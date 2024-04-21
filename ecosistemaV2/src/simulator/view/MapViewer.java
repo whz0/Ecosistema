@@ -4,7 +4,6 @@ import simulator.model.Animal;
 import simulator.model.AnimalInfo;
 import simulator.model.MapInfo;
 
-import javax.swing.JLabel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -72,10 +71,12 @@ public class MapViewer extends AbstractMapViewer {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyChar()) {
+				case 'H':
 				case 'h':
 					_showHelp = !_showHelp;
 					repaint();
 					break;
+				case 'S':
 				case 's':
 
 					int pos;
@@ -133,7 +134,7 @@ public class MapViewer extends AbstractMapViewer {
 		g.setColor(Color.red);
 		if (_showHelp) {
 			g.drawString("h: toggle help", 10, 20);
-			g.drawString("s: show animals of a specific state",10,35);
+			g.drawString("s: show animals of a specific state", 10, 35);
 		}
 
 	}
@@ -177,36 +178,21 @@ public class MapViewer extends AbstractMapViewer {
 
 		}
 
+		int aux = _height;
 		// TODO Dibujar la etiqueta del estado visible, sin no es null.
 		if (_currState != null) {
 			g.setColor(ViewUtils.get_color(_currState.toString()));
-			switch (_currState) {
-			case NORMAL:
-				drawStringWithRect(g, 10, _height - 20, "NORMAL");
-				break;
-			case HUNGER:
-				drawStringWithRect(g, 10, _height - 20, "HUNGER");
-				break;
-			case MATE:
-				drawStringWithRect(g, 10, _height - 20, "MATE");
-				break;
-			case DANGER:
-				drawStringWithRect(g, 10, _height - 20, "DANGER");
-				break;
-			default:
-				drawStringWithRect(g, 10, _height - 20, "DEAD");
-			}
+			drawStringWithRect(g, 10, aux -= 20, "State: " + _currState.toString());
+
 		}
 
 		g.setColor(Color.MAGENTA);
-		drawStringWithRect(g, 10, _height - 40, "Time: " + String.format("%.3f", time));
+		drawStringWithRect(g, 10, aux -= 20, "Time: " + String.format("%.3f", time));
 
-		int i = 0;
 		for (Entry<String, SpeciesInfo> e : _kindsInfo.entrySet()) {
 			g.setColor(e.getValue()._color);
-			drawStringWithRect(g, 10, _height - 60 - i * 20, e.getKey().toString() + ": " + e.getValue()._count);
+			drawStringWithRect(g, 10, aux -= 20, e.getKey().toString() + ": " + e.getValue()._count);
 			e.getValue()._count = 0;
-			i++;
 		}
 	}
 

@@ -10,6 +10,7 @@ import javax.swing.JTable;
 
 public class InfoTable extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	String _title;
 	TableModel _tableModel;
 

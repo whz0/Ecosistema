@@ -17,6 +17,7 @@ import simulator.model.RegionInfo;
 
 class StatusBar extends JPanel implements EcoSysObserver {
 
+	private static final long serialVersionUID = 1L;
 	private Controller _ctrl;
 	private JLabel _time_label;
 	private JLabel _num_animals_label;
@@ -76,6 +77,6 @@ class StatusBar extends JPanel implements EcoSysObserver {
 		this._time_label.setText("Time: " + String.format("%.3f", time));
 		this._num_animals_label.setText("Total Animals: " + animals.size());
 		this._dimension_label.setText(
-				"Dimension: " + map.get_height() + "x" + map.get_width() + " " + map.get_rows() + "x" + map.get_cols());
+				"Dimension: " + map.get_width() + "x" + map.get_height() + " " + map.get_cols() + "x" + map.get_rows());
 	}
 }

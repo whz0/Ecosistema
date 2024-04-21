@@ -44,6 +44,10 @@ public class RegionManager implements AnimalMapView {
 
 	void set_region(int row, int col, Region r) {
 
+		this._region[row][col].getAnimals().forEach((a) -> {
+			r.add_animal(a);
+
+		});
 		this._region[row][col] = r;
 	}
 
@@ -202,7 +206,8 @@ public class RegionManager implements AnimalMapView {
 			@Override
 			public boolean hasNext() {
 
-				return this.i < RegionManager.this._rows - 1 || (this.i==RegionManager.this._rows-1 && this.j < RegionManager.this._cols);
+				return this.i < RegionManager.this._rows - 1
+						|| (this.i == RegionManager.this._rows - 1 && this.j < RegionManager.this._cols);
 			}
 
 			@Override
@@ -214,7 +219,7 @@ public class RegionManager implements AnimalMapView {
 					j = 0;
 				} else
 					j++;
-				if (region == null)
+				if (region == null && hasNext())
 					return next();
 				return region;
 			}

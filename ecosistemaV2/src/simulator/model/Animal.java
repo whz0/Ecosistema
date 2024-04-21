@@ -37,13 +37,13 @@ public abstract class Animal implements Entity, AnimalInfo {
 	protected Animal _baby;
 	protected AnimalMapView _region_mngr;
 	protected SelectionStrategy _mate_strategy;
-	
-	public static enum State{
+
+	public static enum State {
 		NORMAL, MATE, HUNGER, DANGER, DEAD;
 
 	}
-	
-	public static enum Diet{
+
+	public static enum Diet {
 		HERVIBORE, CARNIVORE;
 	}
 
@@ -109,7 +109,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 
 	@Override
 	public void update(double dt) {
-		mostrarAtributos();
+
 		if (!isDead()) {
 			switch (this._state) {
 			case NORMAL:
@@ -137,16 +137,6 @@ public abstract class Animal implements Entity, AnimalInfo {
 				eat(dt);
 			}
 		}
-	}
-
-	private void mostrarAtributos() {
-		System.out.println("codigo genetico: " + this._genetic_code + "--" + this.hashCode());
-		System.out.println("energia:" + this._energy);
-		System.out.println("edad: " + this._age);
-		System.out.println("deseo: " + this._desire);
-		System.out.println("estado: " + this._state.toString());
-		System.out.println("velocidad: " + this._speed);
-		System.out.println("---------------------------");
 	}
 
 	protected abstract boolean toOld();

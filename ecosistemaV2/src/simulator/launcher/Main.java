@@ -239,8 +239,8 @@ public class Main {
 	private static Factory<Region> initialize_regions_builder() {
 
 		List<Builder<Region>> regions_builders = new ArrayList<>();
-		regions_builders.add(new DynamicSupplyRegionBuilder());
 		regions_builders.add(new DefaultRegionBuilder());
+		regions_builders.add(new DynamicSupplyRegionBuilder());
 		Factory<Region> region_factory = new BuilderBasedFactory<Region>(regions_builders);
 		return region_factory;
 	}
@@ -265,7 +265,7 @@ public class Main {
 	private static void start_GUI_mode() throws Exception {
 
 		if (_in_file == null)
-			_simulator = new Simulator(800, 600, 15, 20, _animals_factory, _regions_factory);
+			_simulator = new Simulator(20, 15, 800, 600, _animals_factory, _regions_factory);
 		else
 			try (InputStream is = new FileInputStream(new File(_in_file))) {
 				JSONObject j = load_JSON_file(is);
@@ -274,8 +274,9 @@ public class Main {
 				_controler = new Controller(_simulator);
 				_controler.load_data(j);
 			}
+		_controler = new Controller(_simulator);
 		SwingUtilities.invokeAndWait(() -> new MainWindow(_controler));
-		
+
 	}
 
 	private static void start(String[] args) throws Exception {

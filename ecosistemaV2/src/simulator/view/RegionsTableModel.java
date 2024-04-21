@@ -10,15 +10,18 @@ import java.util.Comparator;
 import javax.swing.table.AbstractTableModel;
 
 import simulator.control.Controller;
+import simulator.misc.Vector2D;
 import simulator.model.Animal;
 import simulator.model.AnimalInfo;
 import simulator.model.EcoSysObserver;
 import simulator.model.MapInfo;
+import simulator.model.Region;
 import simulator.model.MapInfo.RegionData;
 import simulator.model.RegionInfo;
 
 class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 
+	private static final long serialVersionUID = 1L;
 	private Controller _ctrl;
 	private Map<MapInfo.RegionData, Map<Animal.Diet, Integer>> _regions;
 	private List<String> _colNames;
@@ -94,43 +97,59 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
 
-		Iterator<RegionData> i = map.iterator();
-		while (i.hasNext()) {
-			RegionData r = i.next();
-			update(r);
-		}
+		updateMap(map);
 		fireTableDataChanged();
 	}
 
 	@Override
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
+
 		this._regions.clear();
+		updateMap(map);
 		fireTableDataChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
+
+		updateRegion(searchRegion(map, a.get_position()));
+		fireTableDataChanged();
 	}
 
 	@Override
 	public void onRegionSet(int row, int col, MapInfo map, RegionInfo r) {
+
+		List<RegionData> regions = new ArrayList<>(this._regions.keySet());
+		int pos = col + map.get_cols() * row;
+		if (pos < regions.size() && !r.equals(regions.get(pos))) {
+			this._regions.remove(regions.get(pos));
+		}
+		RegionData re = new RegionData(row, col, r);
+		updateRegion(re);
+		fireTableDataChanged();
 	}
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
-		Iterator<RegionData> i = map.iterator();
-		while (i.hasNext()) {
-			RegionData r = i.next();
-			update(r);
-		}
+
+		updateMap(map);
 		fireTableDataChanged();
 	}
 
-	private void update(RegionData r) {
+	private void updateMap(MapInfo map) {
+		Iterator<RegionData> i = map.iterator();
+		while (i.hasNext()) {
+			RegionData r = i.next();
+			updateRegion(r);
+		}
+	}
 
-		if (this._regions.containsKey(r))
-			this._regions.get(r).clear();
+	private void updateRegion(RegionData r) {
+
 		Map<Animal.Diet, Integer> diets = new HashMap<>();
+		if (this._regions.containsKey(r))
+			diets = this._regions.get(r);
+
 		for (Animal.Diet d : Animal.Diet.values())
 			diets.put(d, 0);
 
@@ -141,4 +160,16 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 
 		this._regions.put(r, diets);
 	}
+
+	private MapInfo.RegionData searchRegion(MapInfo map, Vector2D pos) {
+
+		int col = (int) (pos.getX() / map.get_region_width());
+		int row = (int) (pos.getY() / map.get_region_height());
+
+		List<MapInfo.RegionData> regions = new ArrayList<>(this._regions.keySet());
+		int posi = col + map.get_cols() * row;
+
+		return regions.get(posi);
+	}
+
 }

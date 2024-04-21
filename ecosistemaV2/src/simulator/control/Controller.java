@@ -26,7 +26,7 @@ public class Controller {
 	public void load_data(JSONObject data) {
 
 		if (data.has("regions")) {
-			set_regions(data.getJSONObject("regions"));
+			set_regions(data.getJSONArray("regions"));
 		}
 
 		JSONArray animales = data.getJSONArray("animals");
@@ -78,11 +78,11 @@ public class Controller {
 		this._sim.reset(cols, rows, width, height);
 	}
 
-	public void set_regions(JSONObject rs) {
-		JSONArray regiones = rs.getJSONArray("regions");
-		int n = regiones.length();
+	public void set_regions(JSONArray rs) {
+ 
+		int n = rs.length();
 		for (int i = 0; i < n; i++) {
-			JSONObject jo = regiones.getJSONObject(i);
+			JSONObject jo = rs.getJSONObject(i);
 			JSONArray row = jo.getJSONArray("row");
 			int rowIni = row.getInt(0);
 			int rowEnd = row.getInt(1);

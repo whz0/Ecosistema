@@ -3,7 +3,6 @@ package simulator.view;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.stream.Stream;
 import java.util.HashMap;
 
 import javax.swing.table.AbstractTableModel;
@@ -17,6 +16,7 @@ import simulator.model.RegionInfo;
 
 class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 
+	private static final long serialVersionUID = 1L;
 	private Controller _ctrl;
 	private Map<String, Map<Animal.State, Integer>> _animals;
 	private List<String> _colNames;
@@ -110,20 +110,17 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 	private void update(AnimalInfo a) {
 
 		Map<Animal.State, Integer> state = new HashMap<>();
-		if (this._animals.containsKey(a.get_genetic_code())) {
-			state = this._animals.get(a.get_genetic_code());
-			if (state.containsKey(a.get_state())) {
-				int n = state.get(a.get_state());
-				state.replace(a.get_state(), ++n);
-			} else {
-				state.put(a.get_state(), 1);
-			}
-			this._animals.replace(a.get_genetic_code(), state);
-		} else {
-			state.put(a.get_state(), 1);
-			this._animals.put(a.get_genetic_code(), state);
-		}
 
+		for (Animal.State s : Animal.State.values()) {
+			state.put(s, 0);
+		}
+		if (this._animals.containsKey(a.get_genetic_code()))
+			state = this._animals.get(a.get_genetic_code());
+
+		int num = state.get(a.get_state());
+		state.put(a.get_state(), ++num);
+
+		this._animals.put(a.get_genetic_code(), state);
 	}
 
 }

@@ -13,28 +13,28 @@ public class DynamicSupplyRegionBuilder extends Builder<Region> {
 
 	@Override
 	protected DynamicSupplyRegion create_instance(JSONObject data) throws IllegalArgumentException {
- 
-		Double factor = 2.0;
-		Double food = 100.0;
-		
-	//	factor = data.optDouble("factor",2.0);
-		
-		if (!data.has("factor")) {
-			factor = data.getDouble("factor");
-			if (factor.isNaN())
-				throw new IllegalArgumentException("Incorrect argument in DynamicSupplyRegion builder factor");
-		} 
-		if (!data.isNull("food"))
-			food = data.optDouble("food");
-		if (food.isNaN())
-			throw new IllegalArgumentException("Incorrect argument in DynamicSupplyRegion builder food");
 
+		Double factor;
+		Double food;
+
+		if (!data.isEmpty()) {
+			if ((data.has("factor") && data.isNull("factor")) || (data.isNull("food") && data.has("food")))
+				throw new IllegalArgumentException("Incorrect argument the values cant be null");
+		}
+		try {
+			food = data.optDouble("food", 100.0);
+			factor = data.optDouble("factor", 2.0);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Incorrect type of arguments");
+		}
+		
 		return new DynamicSupplyRegion(food, factor);
 	}
 
 	@Override
 	protected void fill_in_data(JSONObject o) {
-		o.put("factor", "food increase factor (optional, default 2.0)");
+
 		o.put("food", "initial amount of food (optional, default 100.0)");
+		o.put("power", "initial amount of food (optional, default 10.0)");
 	}
 }
